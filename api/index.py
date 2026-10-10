@@ -419,13 +419,10 @@ def claude_extract(transcript, phone, started_at):
 GEMINI_MODELS = ["gemini-3.5-flash", "gemini-3.6-flash", "gemini-3-flash", "gemini-2.5-flash"]
 
 
-def gemini_extract(transcript, phone, started_at):
-    """Same job on Google Gemini (used when GEMINI_API_KEY is set and ANTHROPIC_API_KEY is not)."""
-    prompt = ("Call date and time (IST): %s\nCaller number: %s\n\nTranscript:\n%s\n\n"
-              "Reply with ONE JSON object only, matching this JSON Schema exactly (all keys required, use the enum values given):\n%s"
-              % (started_at.strftime("%A %d %B %Y, %I:%M %p"), phone or "unknown", transcript, json.dumps(LEAD_SCHEMA)))
+def gemini_json(system, prompt):
+    """One JSON-mode call to Gemini. Returns (parsed_json, cost_usd). Tries the next model name on 404."""
     body = json.dumps({
-        "systemInstruction": {"parts": [{"text": EXTRACT_SYSTEM}]},
+        "systemInstruction": {"parts": [{"text": system}]},
         "contents": [{"role": "user", "parts": [{"text": prompt}]}],
         "generationConfig": {"responseMimeType": "application/json", "temperature": 0.1},
     }).encode()
@@ -448,8 +445,17 @@ def gemini_extract(transcript, phone, started_at):
         u = data.get("usageMetadata", {})
         usd = (u.get("promptTokenCount", 0) * float(env("GEMINI_IN_PER_MTOK_USD", "0.3")) +
                u.get("candidatesTokenCount", 0) * float(env("GEMINI_OUT_PER_MTOK_USD", "2.5"))) / 1e6
-        return clean_lead(json.loads(text)), round(usd * float(env("USD_INR", "84")), 2)
+        return json.loads(text), usd
     raise RuntimeError(last_error or "No Gemini model available")
+
+
+def gemini_extract(transcript, phone, started_at):
+    """Same job on Google Gemini (used when GEMINI_API_KEY is set and ANTHROPIC_API_KEY is not)."""
+    prompt = ("Call date and time (IST): %s\nCaller number: %s\n\nTranscript:\n%s\n\n"
+              "Reply with ONE JSON object only, matching this JSON Schema exactly (all keys required, use the enum values given):\n%s"
+              % (started_at.strftime("%A %d %B %Y, %I:%M %p"), phone or "unknown", transcript, json.dumps(LEAD_SCHEMA)))
+    data, usd = gemini_json(EXTRACT_SYSTEM, prompt)
+    return clean_lead(data), round(usd * float(env("USD_INR", "84")), 2)
 
 
 def clean_lead(x):
@@ -690,7 +696,9 @@ def apply_action(lead_id, act, who="designer"):
     elif act == "nsh":
         fields, note, stage = {"outcome": "no_show"}, "Marked no-show", "closed"
     elif act == "won":
-        fields, note, stage = {"outcome": "won"}, "Won", "closed"
+        fields, note, stage = {"outcome": "won", "referral_text": referral_text(lead)}, "Won", "closed"
+    elif act == "ref":
+        fields, note, stage = {"referral_asked_at": t}, "Referral ask sent", None
     elif act == "lst":
         return "Why was it lost?", "lost"
     elif act.startswith("lr:"):
@@ -718,6 +726,16 @@ def apply_action(lead_id, act, who="designer"):
     return note, stage
 
 
+def referral_text(l):
+    """The message that turns a won project into the next call."""
+    first = (l.get("caller_name") or "").split(" ")[0] or "there"
+    home = ("your %s home" % l["locality"]) if l.get("locality") else "your home"
+    return ("Hi %s, it's %s from Aangan Studio. We're so glad to be designing %s with you! "
+            "If a friend, neighbour or colleague is planning their interiors, we'd love an introduction. "
+            "They can call the studio any time, even late at night, and someone will always pick up."
+            % (first, l.get("designer") or "the team", home))
+
+
 def handle_telegram(update):
     if not store.setnx("tg:%s" % update.get("update_id"), "1", 86400):
         return  # Telegram retried; act once
@@ -733,6 +751,9 @@ def handle_telegram(update):
         if act == "won":
             store.set("await_value:%s" % chat, lead_id, 3600)
             tg_send(chat, "🎉 Reply with the project value in ₹ lakh (e.g. 11.5) for %s." % lead_id)
+            won = get_lead(lead_id) or {}
+            tg_send(chat, "💬 <b>Referral ask, ready to send to the client:</b>\n\n" + esc(won.get("referral_text", "")),
+                    {"inline_keyboard": [[{"text": "✅ Sent it", "callback_data": "ref|" + lead_id}]]})
         elif act != "lst":
             tg_send(chat, "✔︎ %s: %s" % (lead_id, esc(note)))
         return
@@ -805,6 +826,9 @@ def stats():
     total = voice + ai + fixed
     q, booked, won = count(lambda l: l.get("verdict") == "qualified"), count(has("consult_booked")), count(lambda l: l.get("outcome") == "won")
     won_value = sum(int(l.get("project_value_inr") or 0) for l in leads)
+    avg_value = int(env("AVG_PROJECT_VALUE_INR", "1100000"))
+    close_rate = float(env("CLOSE_RATE", "0.25"))
+    after_q = count(lambda l: l.get("after_hours") and l.get("verdict") == "qualified")
     per = lambda n: round(total / n) if n else 0
     return {
         "storage": "redis" if store.persistent else "memory (resets on restart — add Upstash Redis in Vercel)",
@@ -814,6 +838,13 @@ def stats():
         "funnel": {"qualified": q, "booked": booked, "accepted": count(has("accepted_at")), "called": count(has("called_at")),
                    "consult_done": count(has("consult_done_at")), "won": won, "lost": count(lambda l: l.get("outcome") == "lost"),
                    "won_value": won_value, "pipeline_value": booked * int(env("AVG_PROJECT_VALUE_INR", "1100000"))},
+        "flywheel": {"calls": len(leads), "qualified": q, "booked": booked, "briefed": count(has("handed_off_at")) or q,
+                     "accepted": count(has("accepted_at")), "consult_done": count(has("consult_done_at")), "won": won,
+                     "referral_asked": count(has("referral_asked_at")),
+                     "referral_calls": count(lambda l: l.get("source") == "referral")},
+        "rescued": {"after_hours_calls": count(has("after_hours")), "after_hours_qualified": after_q,
+                    "pipeline_value": after_q * avg_value, "expected_value": round(after_q * avg_value * close_rate),
+                    "avg_project_value": avg_value, "close_rate": close_rate},
         "speed": {"median_pickup_min": round(pickups[len(pickups) // 2], 1) if pickups else None,
                   "sla_misses": count(has("sla_escalated"))},
         "not_fit_reasons": {r: count(reason(r)) for r in ["outside_area", "advice_only", "timeline_too_short", "budget_misaligned",
@@ -825,6 +856,61 @@ def stats():
                  "per_call": per(len(leads)), "per_qualified": per(q), "per_booked": per(booked), "per_won": per(won),
                  "return_multiple": round(won_value / total, 1) if total and won_value else None},
     }
+
+
+BRIEF_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "headline": {"type": "string", "description": "One sentence: the single most important thing this week"},
+        "insights": {"type": "array", "items": {
+            "type": "object",
+            "properties": {"title": {"type": "string"}, "evidence": {"type": "string"}, "action": {"type": "string"}},
+            "required": ["title", "evidence", "action"], "additionalProperties": False}},
+    },
+    "required": ["headline", "insights"],
+    "additionalProperties": False,
+}
+
+BRIEF_SYSTEM = """You are the founder's-office analyst for Aangan Studio, an interior design studio in Pune.
+You write Nikhil's Monday brief about the AI phone desk. Read the numbers and the recent call summaries.
+Give exactly 3 insights, each a specific change that would turn more calls into won projects or close the loop faster
+(e.g. edge localities to add or exclude, a script change, designer pick-up speed, referral asks, pricing-question handling).
+Rules: cite the actual numbers in evidence; never invent data that is not given; never suggest quoting prices on calls
+(that is a deliberate rule). If there is too little data, say what to watch for. Plain, direct sentences."""
+
+
+def monday_brief(refresh=False):
+    cached = store.get("brief:latest")
+    if cached and not refresh:
+        return 200, json.loads(cached)
+    if not ai_provider():
+        return 400, {"error": "No AI key set. Add GEMINI_API_KEY in Vercel."}
+    if store.incr("brief:" + now_ist().strftime("%Y%m%d"), 172800) > 20:
+        return 429, {"error": "Brief limit for today reached."}
+    s = stats()
+    recent = [{"verdict": l.get("verdict"), "summary": l.get("summary"), "locality": l.get("locality"),
+               "flags": l.get("flags"), "fail_reasons": l.get("fail_reasons"), "outcome": l.get("outcome"),
+               "after_hours": l.get("after_hours")} for l in all_leads(40)]
+    prompt = "Numbers:\n%s\n\nRecent calls (newest first):\n%s" % (json.dumps(s, default=str), json.dumps(recent, default=str))
+    if ai_provider() == "gemini":
+        data, usd = gemini_json(BRIEF_SYSTEM, prompt + "\n\nReply with ONE JSON object matching this JSON Schema:\n" + json.dumps(BRIEF_SCHEMA))
+    else:
+        import anthropic
+        r = anthropic.Anthropic().beta.messages.create(
+            model=MODEL, max_tokens=4000, betas=["server-side-fallback-2026-07-01"], fallbacks="default",
+            system=BRIEF_SYSTEM, messages=[{"role": "user", "content": prompt}],
+            output_config={"effort": "low", "format": {"type": "json_schema", "schema": BRIEF_SCHEMA}})
+        if r.stop_reason == "refusal":
+            return 500, {"error": "The AI declined to write the brief."}
+        data = json.loads(next(b.text for b in r.content if b.type == "text"))
+        usd = (r.usage.input_tokens * 4 + r.usage.output_tokens * 20) / 1e6
+    items = [i for i in (data.get("insights") or []) if isinstance(i, dict)][:3]
+    out = {"headline": str(data.get("headline", "")),
+           "insights": [{k: str(i.get(k, "")) for k in ("title", "evidence", "action")} for i in items],
+           "based_on_calls": s["volume"]["calls"], "written_at": now_ist().isoformat(),
+           "cost_inr": round(usd * float(env("USD_INR", "84")), 2)}
+    store.set("brief:latest", json.dumps(out), 600)
+    return 200, out
 
 
 def public_lead(l):
@@ -851,7 +937,20 @@ def simulate(body):
     payload = {"call_id": "sim-" + new_id("C"), "from": phone, "started_at": now_ist().isoformat(),
                "duration": 0 if missed else 300, "transcript": "" if missed else transcript, "simulated": True}
     lead = process_call(payload, notify=True)
+    if lead.get("verdict") == "qualified" and not lead.get("consult_booked"):
+        # On a real call Vaani books mid-call via get_slots/book_consult; the replay does the same step here.
+        kind = "commercial" if "commercial" in (lead.get("project_type") or "") else "residential"
+        slots = get_slots(lead.get("locality", ""), kind)["slots"]
+        if slots:
+            b = book_consult({"slot_id": slots[0]["slot_id"], "caller_name": lead.get("caller_name", ""),
+                              "phone": lead.get("phone", ""), "mode": "site_visit", "locality": lead.get("locality", "")})
+            if b.get("booked"):
+                lead = update_lead(lead["lead_id"], consult_booked=True, designer=b["designer"],
+                                   consult_slot="%s · site visit" % b["when"]) or lead
+                lead["handoff_text"] = handoff_text(lead)
+                update_lead(lead["lead_id"], handoff_text=lead["handoff_text"])
     result = public_lead(lead)
+    result["transcript"] = lead.get("transcript", "")
     if test_id:
         result["expected"] = tc["expected"]
         result["matches_expected"] = lead.get("verdict") == tc["expected"]
@@ -972,7 +1071,9 @@ def dispatch(method, path, query, body, environ):
     if path == "/api/leads" and method == "GET":
         return 200, {"leads": [public_lead(l) for l in all_leads(100)]}
     if path == "/api/test-calls" and method == "GET":
-        return 200, {"calls": [{k: t[k] for k in ("id", "title", "call_date", "expected", "expected_reason")} for t in load_test_calls()]}
+        return 200, {"calls": [{k: t[k] for k in ("id", "title", "call_date", "expected", "expected_reason", "transcript")} for t in load_test_calls()]}
+    if path == "/api/brief" and method == "POST":
+        return monday_brief(bool(body.get("refresh")))
     if path == "/api/simulate" and method == "POST":
         return simulate(body)
     m = re.match(r"^/api/leads/([A-Za-z0-9-]+)/action$", path)
