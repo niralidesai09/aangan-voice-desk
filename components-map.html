@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aangan Components Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* A single drafting sheet: six lanes Trigger → Output, feedback loop beneath, humans-in-the-loop marked in indigo, AI in saffron. Built to export as one image. */
+:root{
+  --paper:#f5f6f3; --sheet:#ffffff; --ink:#1d2330; --graphite:#555c6b; --rule:#d4d7d0;
+  --indigo:#2f3f9e; --indigo-soft:#e7eaf7; --saffron:#8f4f06; --saffron-soft:#fbefdc;
+  --warn:#8e3815; --warn-soft:#f8e6df;
+  --f-display:"Familjen Grotesk","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.45}
+.sheet{width:1600px;padding:40px 44px 36px;display:flex;flex-direction:column;gap:22px}
+.scroll{overflow-x:auto}
+h1,h3,h4{font-family:var(--f-display);margin:0;letter-spacing:-.01em}
+h1{font-size:34px}
+.eyebrow{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--graphite)}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;border-bottom:2px solid var(--ink);padding-bottom:14px}
+.top p{color:var(--graphite);max-width:80ch;margin:6px 0 0}
+.legend{display:flex;gap:16px;font-size:13px;color:var(--graphite);white-space:nowrap}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:13px;height:13px;border-radius:3px;border:1.5px solid}
+.lanes{display:grid;grid-template-columns:repeat(6,1fr);gap:26px}
+.lane{display:flex;flex-direction:column;gap:9px;position:relative}
+.lane:not(:last-child)::after{content:"";position:absolute;right:-20px;top:14px;width:13px;height:13px;border-top:2.5px solid var(--ink);border-right:2.5px solid var(--ink);transform:rotate(45deg)}
+.lh{padding-bottom:8px;border-bottom:2px solid var(--ink);display:flex;flex-direction:column;gap:1px}
+.lh .eyebrow{color:var(--indigo)}
+.lh h3{font-size:19px}
+.n{background:var(--sheet);border:1px solid var(--rule);border-radius:6px;padding:9px 11px;display:flex;flex-direction:column;gap:3px}
+.n h4{font-size:14.5px;font-weight:600}
+.n p{margin:0;font-size:12.5px;color:var(--graphite)}
+.n code{font-family:var(--f-mono);font-size:11.5px;color:var(--ink)}
+.n.ai{border-color:var(--saffron);background:var(--saffron-soft)}
+.n.hum{border-color:var(--indigo);background:var(--indigo-soft)}
+.n.cut{border-color:var(--warn);background:var(--warn-soft)}
+.bottom{display:grid;grid-template-columns:1.6fr 1fr;gap:22px}
+.box{background:var(--sheet);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.loop{border:1.5px dashed var(--indigo)}
+.steps{display:flex;flex-wrap:wrap;align-items:center;gap:7px;font-size:13px}
+.steps span{background:var(--indigo-soft);padding:4px 10px;border-radius:999px}
+.steps i{font-style:normal;color:var(--graphite)}
+.humans{border:1px solid var(--rule)}
+.humans ol{margin:0;padding-left:18px;font-size:13px;display:flex;flex-direction:column;gap:3px}
+.foot{display:flex;justify-content:space-between;font-size:12px;color:var(--graphite);border-top:1px solid var(--rule);padding-top:10px}
+</style>
+</head>
+<body>
+<div class="scroll">
+<div class="sheet" id="sheet">
+  <div class="top">
+    <div>
+      <span class="eyebrow">MESA Case 03 · Aangan Studio · Components Map</span>
+      <h1>Every call answered in seconds. Every good lead reaches a designer fully briefed.</h1>
+      <p>Phone calls only. The assistant qualifies callers against Nikhil's five criteria, books the consultation, and hands off on Telegram. Pricing is never quoted.</p>
+    </div>
+    <div class="legend">
+      <span><i class="sw" style="border-color:var(--rule);background:var(--sheet)"></i>Software / data</span>
+      <span><i class="sw" style="border-color:var(--saffron);background:var(--saffron-soft)"></i>AI</span>
+      <span><i class="sw" style="border-color:var(--indigo);background:var(--indigo-soft)"></i>Human</span>
+      <span><i class="sw" style="border-color:var(--warn);background:var(--warn-soft)"></i>Cut / guardrail</span>
+    </div>
+  </div>
+
+  <div class="lanes">
+    <div class="lane">
+      <div class="lh"><span class="eyebrow">01 · Trigger</span><h3>A call comes in</h3></div>
+      <div class="n"><h4>Studio number rings</h4><p>Front desk gets first rings, 10am–7pm.</p></div>
+      <div class="n"><h4>Rolls over to the AI</h4><p>After hours, busy, or unanswered: Vaani picks up. A third of calls arrive after 7pm.</p></div>
+      <div class="n"><h4>Missed / dropped call</h4><p>No transcript → front desk gets a call-back alert.</p></div>
+    </div>
+    <div class="lane">
+      <div class="lh"><span class="eyebrow">02 · Input</span><h3>What arrives</h3></div>
+      <div class="n"><h4>Caller's voice</h4><p>English, Hindi, Marathi, Hinglish → text in real time.</p></div>
+      <div class="n"><h4>Caller's number</h4><p>Looked up before the first question.</p></div>
+      <div class="n"><h4>End-of-call report</h4><p>Transcript, duration, cost, recording.</p></div>
+    </div>
+    <div class="lane">
+      <div class="lh"><span class="eyebrow">03 · Context</span><h3>What it knows</h3></div>
+      <div class="n"><h4>Studio rules</h4><p><code>services.md</code> scope · <code>qualified.md</code> five criteria</p></div>
+      <div class="n cut"><h4>Pricing: deflection line only</h4><p>From <code>pricing.md</code>. No numbers loaded. This is the Cut.</p></div>
+      <div class="n"><h4>Service area list</h4><p>Pune + PCMC. Edge areas (Kharadi, Nanded City) → ask a human.</p></div>
+      <div class="n"><h4>Caller history + live clients</h4><p>New? Called before? Existing project?</p></div>
+      <div class="n"><h4>Designer slots</h4><p>By area and project type.</p></div>
+    </div>
+    <div class="lane">
+      <div class="lh"><span class="eyebrow">04 · Processing</span><h3>Decisions</h3></div>
+      <div class="n"><h4>Route</h4><p>New enquiry · existing client · other</p></div>
+      <div class="n"><h4>Five checks</h4><p>Real project · area · timeline · budget (only if volunteered) · decision-maker. One question at a time.</p></div>
+      <div class="n"><h4>Verdict</h4><p>Qualified · Not a fit · Follow up later · Escalation · Missed</p></div>
+      <div class="n"><h4>Assign + book</h4><p>Designer by area and load; slot booked live.</p></div>
+    </div>
+    <div class="lane">
+      <div class="lh"><span class="eyebrow">05 · AI</span><h3>The model's jobs</h3></div>
+      <div class="n ai"><h4>Live conversation</h4><p>Vaani voice agent: warm, short turns, calls tools mid-call.</p></div>
+      <div class="n ai"><h4>Transcript → lead record</h4><p>Claude Opus 5.5, structured JSON: fields, verdict, reasons, flags, handoff note.</p></div>
+      <div class="n cut"><h4>Price guardrail</h4><p>Every transcript scanned for ₹ figures said by the AI → alert Nikhil. Target: 0.</p></div>
+    </div>
+    <div class="lane">
+      <div class="lh"><span class="eyebrow">06 · Output</span><h3>What happens</h3></div>
+      <div class="n hum"><h4>Telegram brief to designer</h4><p>Everything asked, "don't re-ask" list, one-tap buttons. 60 min to accept or → Nikhil.</p></div>
+      <div class="n hum"><h4>Escalation to Nikhil</h4><p>Upset existing client → senior callback in 15 min.</p></div>
+      <div class="n hum"><h4>Front desk list</h4><p>Call-backs, follow-up dates, area checks.</p></div>
+      <div class="n"><h4>Dashboard on Vercel</h4><p>Funnel, speed, decline reasons, cost per lead and per won project.</p></div>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div class="box loop">
+      <span class="eyebrow" style="color:var(--indigo)">The flywheel: who closes the loop</span>
+      <div class="steps">
+        <span>Call answered</span><i>→</i><span>Qualified + booked</span><i>→</i><span>Designer taps Accept · Called · Consult done</span><i>→</i>
+        <span>Won (₹ value) / Lost (reason)</span><i>→</i><span>Dashboard</span><i>→</i><span>Weekly tune of prompt + rubric</span><i>→</i>
+        <span>Won client asked for referral</span><i>→</i><span>More calls</span>
+      </div>
+      <p style="margin:0;font-size:13px;color:var(--graphite)">Telegram over email: a push alert matters when answering in under an hour converts 4×, and the buttons turn every outcome into data in one tap. That's what lets the dashboard show revenue, not just calls.</p>
+    </div>
+    <div class="box humans">
+      <span class="eyebrow">Humans placed exactly here</span>
+      <ol>
+        <li><b>Price</b>: only the designer, at the consultation</li>
+        <li><b>Upset existing client</b>: senior callback in 15 min</li>
+        <li><b>Unclear area or scope</b>: front desk / Nikhil decides</li>
+        <li><b>Every qualified lead</b>: designer accepts in 60 min, else Nikhil</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>Stack: Vaani (voice) · Claude Opus 5.5 (extraction) · Python on Vercel · Upstash Redis · Telegram Bot API</span>
+    <span>~200 enquiries/month · ~48% unanswered in 48h today · avg project ₹8–14L · running cost ≈ ₹5.5–11k/month</span>
+  </div>
+</div>
+</div>
+</body>
+</html>

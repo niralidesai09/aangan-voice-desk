@@ -1,0 +1,119 @@
+{
+  "_how_to_use": "Add each function below as a custom function / webhook tool in Vaani. URL = https://<your-app>.vercel.app/api/vaani/<name>?key=<WEBHOOK_SECRET>. Method POST, JSON body = the parameters.",
+  "functions": [
+    {
+      "name": "check_caller",
+      "description": "Look up the caller's phone number at the start of every call. Returns whether they are new, have enquired before, or are an existing client with a project in progress.",
+      "url": "https://<your-app>.vercel.app/api/vaani/check_caller?key=<WEBHOOK_SECRET>",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "phone": {
+            "type": "string",
+            "description": "Caller's phone number, any format"
+          }
+        },
+        "required": [
+          "phone"
+        ]
+      }
+    },
+    {
+      "name": "get_slots",
+      "description": "Get up to 3 open consultation slots with a suitable designer. Call once the caller qualifies.",
+      "url": "https://<your-app>.vercel.app/api/vaani/get_slots?key=<WEBHOOK_SECRET>",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "locality": {
+            "type": "string",
+            "description": "Area of the property, e.g. Kothrud"
+          },
+          "project_type": {
+            "type": "string",
+            "enum": [
+              "residential",
+              "commercial"
+            ]
+          }
+        },
+        "required": [
+          "locality",
+          "project_type"
+        ]
+      }
+    },
+    {
+      "name": "book_consult",
+      "description": "Book the slot the caller chose. Call only after the caller confirms a slot.",
+      "url": "https://<your-app>.vercel.app/api/vaani/book_consult?key=<WEBHOOK_SECRET>",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "slot_id": {
+            "type": "string",
+            "description": "slot_id returned by get_slots"
+          },
+          "caller_name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "site_visit",
+              "studio"
+            ]
+          },
+          "locality": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "slot_id",
+          "caller_name",
+          "phone",
+          "mode"
+        ]
+      }
+    },
+    {
+      "name": "escalate",
+      "description": "Existing client with a problem on a live project. Alerts Nikhil and senior staff immediately for a callback within 15 minutes.",
+      "url": "https://<your-app>.vercel.app/api/vaani/escalate?key=<WEBHOOK_SECRET>",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "caller_name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "designer": {
+            "type": "string",
+            "description": "Their designer's name, if mentioned"
+          },
+          "issue": {
+            "type": "string",
+            "description": "One or two sentences on what's wrong"
+          },
+          "wants_nikhil": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "caller_name",
+          "phone",
+          "issue"
+        ]
+      }
+    }
+  ],
+  "post_call_webhook": {
+    "_note": "Set Vaani's end-of-call webhook to this URL. It must include the transcript and caller number; common payload shapes are accepted.",
+    "url": "https://<your-app>.vercel.app/api/vaani/call_ended?key=<WEBHOOK_SECRET>"
+  }
+}

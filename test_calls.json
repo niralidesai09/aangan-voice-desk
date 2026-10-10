@@ -1,0 +1,162 @@
+[
+ {
+  "id": "T01",
+  "title": "Priya — Kothrud 3BHK, referral",
+  "call_date": "2026-09-02",
+  "expected": "qualified",
+  "expected_reason": "Kothrud 3BHK full redo, March, owner",
+  "transcript": "T01 · Phone · 2 September · 10:23am · 4 min 12 sec\nFront Desk: Good morning, Aangan Studio.\nCaller: Hi, I’m Priya. I got your number from a friend — Shruti Joshi. She had her flat done\nby you in Aundh.\nFront Desk: Of course — thank you for calling. What are you looking to do?\nCaller: We have a 3BHK in Kothrud — Dahanukar Colony. We bought it two years ago and it\nstill looks like the builder flat. We want to redo the whole thing — kitchen, living room, both\nbedrooms.\nFront Desk: That sounds like a complete redesign. How big is the apartment?\nCaller: About 1,400 sq ft carpet.\nFront Desk: And your timeline?\nCaller: We’d like to be done by March. We’re in no rush.\nFront Desk: Perfect. Are you the owner?\nCaller: Yes — myself and my husband. He knows we’re calling and is happy to go ahead.\nFront Desk: Lovely. Can I take your number and schedule a consultation?\nCaller: Sure. (gives number)"
+ },
+ {
+  "id": "T02",
+  "title": "Wakad 2BHK, keeps asking price",
+  "call_date": "2026-09-03",
+  "expected": "qualified",
+  "expected_reason": "Wakad 2BHK; pricing asked but deflected",
+  "transcript": "T02 · Phone · 3 September · 2:41pm · 5 min 08 sec\nFront Desk: Good afternoon, Aangan Studio.\nCaller: Hi. I was looking at your work on Instagram. I have a 2BHK in Wakad — can you tell\nme roughly how much something like that would cost?\nFront Desk: Our pricing depends on the materials and the scope — the best way to get a\nclear picture is a consultation with one of our designers, who can walk you through\neverything. What are you planning to do?\nCaller: Full redesign — modular kitchen, wardrobes, living room, both bedrooms. About\n950 sq ft.\nFront Desk: Good scope. What’s your timeline?\nCaller: We move in November — so maybe starting design from October?\nFront Desk: That works well. Shall I set up a consultation?\nCaller: Yes, but can you give me a rough ballpark first? Even a range?\nFront Desk: I genuinely can’t — it varies quite a bit based on materials. Giving you a\nnumber without seeing the site would be misleading. The designer will go through all of\nthat with you — the consultation is free and there’s no obligation.\nCaller: Okay, fair enough. Let’s book it."
+ },
+ {
+  "id": "T03",
+  "title": "Suresh — Nashik home office",
+  "call_date": "2026-09-03",
+  "expected": "not_fit",
+  "expected_reason": "outside_area (Nashik)",
+  "transcript": "T03 · Phone · 3 September · 4:15pm · 2 min 40 sec\nFront Desk: Good afternoon, Aangan Studio.\nCaller: Hello, I saw your work on LinkedIn. My name is Suresh Patil. I’m in Nashik — would\nyou be able to take on a project here? I want to redo my home office and study.\nFront Desk: Thank you for calling. We only work in Pune and PCMC at the moment — we\ndon’t have the vendor network to take on projects outside Pune.\nCaller: Not even for a smaller project?\nFront Desk: Even for a smaller project, our execution depends on our contractors being\non-site. I’m sorry we can’t help.\nCaller: Alright, understood. Thanks."
+ },
+ {
+  "id": "T04",
+  "title": "Living room ideas only",
+  "call_date": "2026-09-04",
+  "expected": "not_fit",
+  "expected_reason": "advice_only",
+  "transcript": "T04 · Phone · 4 September · 11:07am · 3 min 22 sec\nFront Desk: Good morning, Aangan Studio.\nCaller: Hi — can someone come and give us some ideas for our living room? We’re not\nplanning to do the full thing right now. Just want suggestions on colours, furniture\narrangement, what to change.\nFront Desk: We’re a full-service studio — our projects include design and execution\ntogether. We don’t do advisory or consultation-only visits. If you’re planning a full redesign\nwith execution, we’d be a great fit.\nCaller: Oh I see. No, we’re just exploring for now. Maybe later.\nFront Desk: Of course — feel free to call back when you’re ready to go ahead with a full\nproject."
+ },
+ {
+  "id": "T05",
+  "title": "Aarti — KP 4BHK, friend of Nikhil",
+  "call_date": "2026-09-05",
+  "expected": "qualified",
+  "expected_reason": "VIP referral, KP 4BHK",
+  "transcript": "T05 · Phone · 5 September · 10:52am · 6 min 44 sec\nFront Desk: Good morning, Aangan Studio.\nCaller: Hi, this is Aarti Mehta. Vikram Agarwal asked me to call — he’s a close friend of\nNikhil’s.\nFront Desk: Of course, thank you. What are you looking for?\nCaller: We have a 4BHK in Koregaon Park — about 2,400 sq ft carpet. Complete redesign.\nNew flooring, kitchen, all four bedrooms. We’ve already moved out temporarily.\nFront Desk: That’s a significant project. Do you have a timeline?\nCaller: We want to move back in by February. About 4 months.\nFront Desk: That should work well. Would you prefer a site visit for the consultation?\nCaller: Yes please — Vikram said your team does that.\nFront Desk: Absolutely. Can I check your availability for early next week?"
+ },
+ {
+  "id": "T06",
+  "title": "Baner startup office, 800 sq ft",
+  "call_date": "2026-09-05",
+  "expected": "qualified",
+  "expected_reason": "Baner 800 sq ft office, founder",
+  "transcript": "T06 · Phone · 5 September · 3:28pm · 5 min 01 sec\nFront Desk: Good afternoon, Aangan Studio.\nCaller: Hi, I’m calling about a commercial project. We’re a startup — just got our first\nproper office space in Baner. About 800 sq ft. We need workstations for 20 people, a small\ncabin, a meeting room, and a break area.\nFront Desk: We do commercial fitouts up to about 3,000 sq ft. What’s the state of the space\nright now?\nCaller: Bare shell — just columns and floor. Nothing else.\nFront Desk: Full fitout from scratch. And the timeline?\nCaller: We want to be operational by December. Our team is working from home currently.\nFront Desk: December is doable. Are you the decision-maker for this?\nCaller: Yes, I’m the founder.\nFront Desk: Perfect. Let’s set up a consultation."
+ },
+ {
+  "id": "T07",
+  "title": "Living room + kitchen before Diwali",
+  "call_date": "2026-09-08",
+  "expected": "nurture",
+  "expected_reason": "timeline_too_short; open to Nov start",
+  "transcript": "T07 · Phone · 8 September · 9:44am · 3 min 15 sec\nFront Desk: Good morning, Aangan Studio.\nCaller: Hello — I want to redo my living room and kitchen before Diwali. Can you take it\nup?\nFront Desk: Diwali is about three weeks away. Our design phase alone takes 3–4 weeks,\nand execution follows. We couldn’t do justice to a project in that time.\nCaller: Even just the living room?\nFront Desk: Even so — a room redesign with execution takes at least 8–10 weeks from\nstart to finish. We wouldn’t want to rush it.\nCaller: What if I start after Diwali?\nFront Desk: A November start would work well. Shall I note your details for that?\nCaller: Let me think and call back."
+ },
+ {
+  "id": "T08",
+  "title": "Missed call at 10:47pm",
+  "call_date": "2026-09-09",
+  "expected": "incomplete",
+  "expected_reason": "missed call, no conversation",
+  "transcript": "T08 · Phone · 9 September · 10:47pm · MISSED CALL\nMissed call. No voicemail. Number associated with Nanded City area (Pune). Call-back\nattempted following morning at 10:15am — no answer."
+ },
+ {
+  "id": "T09",
+  "title": "Sheetal — angry existing client",
+  "call_date": "2026-09-10",
+  "expected": "escalation",
+  "expected_reason": "existing client complaint",
+  "transcript": "T09 · Phone · 10 September · 11:32am · 5 min 52 sec — ESCALATE\nFront Desk: Good morning, Aangan Studio.\nCaller: I need to speak to someone right now. My project has been going for three months\nand my designer hasn’t replied in five days. This is not acceptable.\nFront Desk: I’m very sorry. Can I take your name and project details?\nCaller: Sheetal Deshpande. My designer is Aryan. Flat in Viman Nagar — 2BHK. I’ve sent\nthree messages and called twice.\nFront Desk: Sheetal, I’m getting this to our project team right now. Would you prefer to\nhold for two minutes, or should I have someone senior call you back within 15 minutes?\nCaller: Callback. And I want it from Nikhil or a senior person — not just whoever picks up.\nFront Desk: Noted. I’ll make sure of that.\nNote: Existing project complaint. Escalated to studio head immediately."
+ },
+ {
+  "id": "T10",
+  "title": "Kharadi 1BHK, budget ₹1–1.5L",
+  "call_date": "2026-09-11",
+  "expected": "not_fit",
+  "expected_reason": "budget_misaligned (1-1.5L); Kharadi edge locality",
+  "transcript": "T10 · Phone · 11 September · 2:04pm · 3 min 40 sec\nFront Desk: Good afternoon, Aangan Studio.\nCaller: Hi. I have a 1BHK in Kharadi — about 550 sq ft. I want to do the kitchen and one\nbedroom. My budget is 1 to 1.5 lakh maximum for everything. Is that possible with you?\nFront Desk: I appreciate you sharing that. For a kitchen redesign and a bedroom with full\nexecution — materials, furniture, and contractor work — 1 to 1.5 lakh would be\nsignificantly below what a project of that scope would cost with us.\nCaller: Even for one bedroom?\nFront Desk: Even for one room. I wouldn’t want to bring you to a consultation if the\nnumbers don’t align. I’d suggest checking with local contractors who work at that price\npoint.\nCaller: Okay, thank you for being straight."
+ },
+ {
+  "id": "T11",
+  "title": "Baner rented 2BHK",
+  "call_date": "2026-09-12",
+  "expected": "qualified",
+  "expected_reason": "tenant, no structural change",
+  "transcript": "T11 · Phone · 12 September · 10:18am · 6 min 22 sec\nFront Desk: Good morning, Aangan Studio.\nCaller: Hi — I have a question. I’m in a rented apartment. Can you still take up a project?\nFront Desk: It depends on the scope. What are you looking to do?\nCaller: It’s a 2BHK in Baner. I’ve been here a year, I have a 3-year lease, and the place is\nquite bare. I want to properly design the living room, bedroom, and kitchen — no structural\nchanges, just design and fittings.\nFront Desk: That’s fine — we’ve done rented apartments before. For the kitchen we’d do a\nmodular unit that can come out cleanly. The rest is largely flooring, lighting, and furniture\n— all reversible. Have you checked with your landlord?\nCaller: Yes — they’re fine with it as long as we don’t break walls.\nFront Desk: Perfect. No wall-breaking from us. Shall we set up a consultation?\nCaller: Yes please."
+ },
+ {
+  "id": "T12",
+  "title": "Anand — Kalyani Nagar villa",
+  "call_date": "2026-09-15",
+  "expected": "qualified",
+  "expected_reason": "Kalyani Nagar villa",
+  "transcript": "T12 · Phone · 15 September · 10:05am · 7 min 30 sec\nFront Desk: Good morning, Aangan Studio.\nCaller: I’m calling about a villa project in Kalyani Nagar. My name is Anand Sharma. The\nproperty is about 5,500 sq ft — ground plus two floors. Full end-to-end design.\nFront Desk: That’s a significant project. Is this a new property or an existing home?\nCaller: New construction. Possession was last month. Completely empty.\nFront Desk: And your timeline?\nCaller: March next year to move in. No rush.\nFront Desk: Good time to start. Would you like our principal designer to come to site for\nthe first consultation?\nCaller: Yes — this week or next if possible.\nFront Desk: Let me check the calendar and revert by end of day."
+ },
+ {
+  "id": "T13",
+  "title": "Aundh 3BHK, wants a price range",
+  "call_date": "2026-09-16",
+  "expected": "qualified",
+  "expected_reason": "asked price twice, booked",
+  "transcript": "T13 · Phone · 16 September · 12:19pm · 6 min 08 sec\nFront Desk: Good afternoon, Aangan Studio.\nCaller: Hi — I want to redo my flat in Aundh. 3BHK, about 1,100 sq ft. What might it cost?\nFront Desk: Our pricing depends on the materials and scope — the designers go through\nthat at the consultation. What are you planning?\nCaller: Kitchen, wardrobes in both bedrooms, living room. But seriously — can’t you give\nme even a rough range? I just want to know if we’re in the same ballpark.\nFront Desk: I really can’t give a number that would mean anything without seeing the site\nand the spec. The difference between a standard and a premium kitchen alone can be 3×\nthe cost. The consultation is free — the designer will give you a proper number by the end\nof it.\nCaller: Fine. Let’s book then.\nFront Desk: Perfect. What days work for you?"
+ },
+ {
+  "id": "T14",
+  "title": "Son calling for parents, Hadapsar",
+  "call_date": "2026-09-17",
+  "expected": "qualified",
+  "expected_reason": "proxy caller flag; parents decide",
+  "transcript": "T14 · Phone · 17 September · 11:41am · 4 min 55 sec\nFront Desk: Good morning, Aangan Studio.\nCaller: Hi — I wanted to inquire about an interior project for my parents. They have a\n3BHK in Hadapsar — new possession. They want a proper design.\nFront Desk: That sounds good. Will your parents be involved in the decision?\nCaller: Yes — I’m doing the initial checking. They don’t really use phones much. I’ll tell\nthem about the consultation and they’ll decide.\nFront Desk: Sure — just so we know: your parents would be at the consultation, right? Our\ndesigners like to understand the brief directly from the people who’ll live in the space.\nCaller: Yes, they would come. I’m just calling to see if it’s worth pursuing.\nFront Desk: Absolutely. Should I note your details and explain what the consultation\ninvolves?\nCaller: Please. (gives number)\nNote: Caller is son. Owners are parents; both will attend consultation. Decision with parents."
+ },
+ {
+  "id": "T15",
+  "title": "Smita — Undri, possession in 6 weeks",
+  "call_date": "2026-09-18",
+  "expected": "qualified",
+  "expected_reason": "6-week possession, Undri",
+  "transcript": "T15 · Phone · 18 September · 3:12pm · 5 min 44 sec\nFront Desk: Good afternoon, Aangan Studio.\nCaller: Hi, I’m Smita. I’m getting possession of my flat in Undri in about six weeks. 2BHK,\n875 sq ft. I want to start the design right away.\nFront Desk: Six weeks is just enough lead time to get the design finalised before execution\nbegins. What are you planning?\nCaller: Full home — kitchen, wardrobes, living room. The full package.\nFront Desk: Good scope. Are you the owner?\nCaller: Yes — my husband and I. He said to go ahead and book the consultation.\nFront Desk: Can we see the site in its current state, or do you need to wait for possession?\nCaller: We can go now — the builder will let us in.\nFront Desk: Even better. Let me get a designer’s availability."
+ },
+ {
+  "id": "T16",
+  "title": "Girish — called before, no callback",
+  "call_date": "2026-09-19",
+  "expected": "qualified",
+  "expected_reason": "repeat caller, frustrated",
+  "transcript": "T16 · Phone · 19 September · 10:38am · 5 min 18 sec\nFront Desk: Good afternoon, Aangan Studio.\nCaller: Hi — I’d called on Monday about a project. Someone said they’d get back to me. It’s\nbeen two days.\nFront Desk: I’m very sorry. Can I get your name?\nCaller: Girish Nair. I called Monday afternoon. I told someone about my 3BHK in Viman\nNagar and gave my number.\nFront Desk: I apologise — I don’t see a note. Can you give me your details again? I’ll book\nthe consultation directly now so it doesn’t slip again.\nCaller: This is not a good sign if you forget before you even start.\nFront Desk: You’re absolutely right, and I’m sorry. Let me make this right now.\nNote: Enquiry originally received Monday — no follow-up. Re-logged Friday. Caller frustrated.\nHandle with care."
+ },
+ {
+  "id": "T17",
+  "title": "Ritu — call dropped, called back",
+  "call_date": "2026-09-22",
+  "expected": "qualified",
+  "expected_reason": "dropped then called back",
+  "transcript": "T17 · Phone · 22 September · 2:14pm then 2:16pm\nFirst call — disconnected at 1 min 12 sec\nFront Desk: Good afternoon, Aangan Studio.\nCaller: Hi, I wanted to inquire about — (line drops)\nSecond call — 4 min 30 sec\nFront Desk: Good afternoon, Aangan Studio.\nCaller: Hi — I called just now and got cut off. I’m Ritu Kapoor from Pimple Saudagar. 3BHK,\nabout 1,050 sq ft. We’ve been here two years but never properly did the interiors. We want\nto start now.\nFront Desk: Thanks for calling back. Pimple Saudagar is in our service area. What are you\nlooking to do?\nCaller: Kitchen, wardrobes, living room. We moved in with builder furniture and it’s very\nbasic.\nFront Desk: Standard full-home scope. Timeline?\nCaller: Ideally done by March. Plenty of time.\nFront Desk: Perfect. Let me book a consultation."
+ },
+ {
+  "id": "T18",
+  "title": "180 sq ft coworking pod",
+  "call_date": "2026-09-23",
+  "expected": "not_fit",
+  "expected_reason": "below_minimum_size (180 sq ft pod)",
+  "transcript": "T18 · Phone · 23 September · 11:55am · 3 min 02 sec\nFront Desk: Good morning, Aangan Studio.\nCaller: Hi — I run a small coworking space. I have a 180 sq ft pod I want to make look really\nnice. Good lighting, a nice desk, some storage. Can you help?\nFront Desk: Our commercial projects are typically 500 sq ft or more. A 180 sq ft pod is\nbelow our minimum scope.\nCaller: Not even for a smaller fee?\nFront Desk: It’s not about the fee — it’s that our design and execution team is set up for a\ncertain scale. A 180 sq ft space isn’t one we could do well at the quality we’d want to\npromise. I’d suggest a local designer who specialises in smaller commercial spaces.\nCaller: Fair enough. Thanks."
+ },
+ {
+  "id": "T19",
+  "title": "Restaurant in Koregaon Park",
+  "call_date": "2026-09-24",
+  "expected": "not_fit",
+  "expected_reason": "out_of_scope_type (restaurant)",
+  "transcript": "T19 · Phone · 24 September · 4:02pm · 2 min 50 sec\nFront Desk: Good afternoon, Aangan Studio.\nCaller: Hi — I’m planning to open a restaurant in Koregaon Park. I’ve seen your work and I\nlove it. Would you be able to design the interiors?\nFront Desk: We appreciate you reaching out. Restaurant and hospitality interiors are\noutside our current scope — we focus on residential and office spaces. For a restaurant\nyou’d need a studio that specialises in commercial hospitality, which has very different\nmaterial and compliance requirements.\nCaller: Do you know anyone you could refer?\nFront Desk: I don’t have a specific referral I could make confidently, but searching for\nhospitality interior designers in Pune would give you more relevant options.\nCaller: Alright, thanks."
+ },
+ {
+  "id": "T20",
+  "title": "Pooja — Magarpatta 2BHK",
+  "call_date": "2026-09-25",
+  "expected": "qualified",
+  "expected_reason": "Magarpatta 2BHK, both owners",
+  "transcript": "T20 · Phone · 25 September · 9:15am · 4 min 44 sec\nFront Desk: Good morning, Aangan Studio.\nCaller: Good morning. I’m Pooja. I have a 2BHK in Magarpatta — Cybercity area. We’ve\nbeen wanting to properly design the interiors for a while. Kitchen, both bedrooms, living\nroom. About 900 sq ft.\nFront Desk: Good scope for us. How soon are you looking to start?\nCaller: We’re flexible — a January start for execution would be ideal.\nFront Desk: That works well. Are you the owner?\nCaller: Yes — my husband and I. We both want to be at the consultation.\nFront Desk: Excellent. Can I book that now?\nCaller: Please."
+ }
+]

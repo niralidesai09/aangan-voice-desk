@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aangan Voice Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: an operations console. Try-it panel first (replay a real call), then the numbers Nikhil reads, then the lead log. */
+:root{
+  --paper:#f5f6f3; --sheet:#ffffff; --ink:#1d2330; --graphite:#5a6170; --rule:#d9dcd6;
+  --indigo:#2f3f9e; --indigo-soft:#e7eaf7; --saffron:#8f4f06; --saffron-soft:#fbefdc;
+  --good:#24653f; --good-soft:#e3f2e8; --warn:#8e3815; --warn-soft:#f8e6df; --muted-soft:#eceee9;
+  --f-display:"Familjen Grotesk","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#14171d; --sheet:#1c2028; --ink:#e7e9ee; --graphite:#a1a7b4; --rule:#323845;
+  --indigo:#9aa8ff; --indigo-soft:#262d4d; --saffron:#f0a64a; --saffron-soft:#3a2b17;
+  --good:#7fcf9c; --good-soft:#1d3326; --warn:#f08f6b; --warn-soft:#3b231b; --muted-soft:#262a33; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#14171d; --sheet:#1c2028; --ink:#e7e9ee; --graphite:#a1a7b4; --rule:#323845;
+  --indigo:#9aa8ff; --indigo-soft:#262d4d; --saffron:#f0a64a; --saffron-soft:#3a2b17;
+  --good:#7fcf9c; --good-soft:#1d3326; --warn:#f08f6b; --warn-soft:#3b231b; --muted-soft:#262a33; color-scheme:dark}
+*{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:20px;padding-block:28px 64px;display:flex;flex-direction:column;gap:36px}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:clamp(26px,3.6vw,36px)} h2{font-size:20px} h3{font-size:15px}
+p{margin:0}
+.eyebrow{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--graphite)}
+.muted{color:var(--graphite)}
+header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px;border-bottom:1px solid var(--rule);padding-bottom:20px}
+header .lede{max-width:62ch;color:var(--graphite);margin-top:6px}
+.status{display:flex;flex-wrap:wrap;gap:8px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:var(--muted-soft);color:var(--graphite);white-space:nowrap}
+.pill.ok{background:var(--good-soft);color:var(--good)} .pill.bad{background:var(--warn-soft);color:var(--warn)}
+.pill.v-qualified{background:var(--good-soft);color:var(--good)} .pill.v-not_fit{background:var(--warn-soft);color:var(--warn)}
+.pill.v-nurture{background:var(--saffron-soft);color:var(--saffron)} .pill.v-escalation{background:var(--warn-soft);color:var(--warn)}
+.pill.v-incomplete{background:var(--muted-soft);color:var(--graphite)}
+section{display:flex;flex-direction:column;gap:14px}
+.sec-head{display:flex;flex-direction:column;gap:4px}
+.card{background:var(--sheet);border:1px solid var(--rule);border-radius:8px;padding:18px;min-width:0}
+
+/* try it */
+.try{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:20px;align-items:start}
+.controls{display:flex;flex-direction:column;gap:12px}
+label{font-weight:600;font-size:13px}
+select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:6px;padding:9px 10px}
+textarea{min-height:120px;font-size:13px;resize:vertical}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button{font:inherit;font-weight:600;font-size:14px;border-radius:6px;padding:9px 14px;cursor:pointer;border:1px solid var(--indigo);background:var(--indigo);color:var(--sheet)}
+button.ghost{background:transparent;color:var(--indigo)}
+button:disabled{opacity:.55;cursor:progress}
+button:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+details summary{cursor:pointer;color:var(--indigo);font-weight:600;font-size:14px}
+.result{display:flex;flex-direction:column;gap:12px}
+.empty{color:var(--graphite);font-size:14px;padding:28px 8px;text-align:center;border:1px dashed var(--rule);border-radius:8px}
+.tg{background:var(--paper);border-radius:10px;padding:14px;font-size:13.5px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
+.tg-head{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--graphite);margin-bottom:6px}
+.tg-dot{width:22px;height:22px;border-radius:50%;background:var(--indigo);color:var(--sheet);display:grid;place-items:center;font-weight:700;font-size:11px}
+.taps{display:flex;flex-wrap:wrap;gap:6px}
+.taps button{font-size:13px;padding:7px 10px}
+.verdict-line{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:14px}
+.kv{display:grid;grid-template-columns:120px minmax(0,1fr);gap:4px 12px;font-size:13.5px}
+.kv dt{color:var(--graphite)} .kv dd{margin:0;overflow-wrap:anywhere}
+
+/* numbers */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.tile{background:var(--sheet);border:1px solid var(--rule);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.tile b{font-family:var(--f-display);font-size:28px;font-weight:600;font-variant-numeric:tabular-nums}
+.tile span{font-size:13px;color:var(--graphite)}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;align-items:start}
+.bars{display:flex;flex-direction:column;gap:8px}
+.bar{display:grid;grid-template-columns:150px minmax(0,1fr) 44px;gap:10px;align-items:center;font-size:13.5px}
+.bar .track{height:10px;background:var(--muted-soft);border-radius:5px;overflow:hidden}
+.bar .fill{height:100%;background:var(--indigo);border-radius:5px}
+.bar .n{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--graphite);font-weight:500}
+td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+.costrow td:first-child{color:var(--graphite)}
+.costrow.total td{font-weight:700;color:var(--ink)}
+.table-wrap{overflow-x:auto}
+.leads tbody tr{cursor:pointer}
+.leads tbody tr:hover{background:var(--paper)}
+.flagchips{display:flex;flex-wrap:wrap;gap:4px}
+.flagchips span{font-family:var(--f-mono);font-size:11px;color:var(--graphite)}
+.alert{border-color:var(--warn);background:var(--warn-soft)}
+footer{font-size:13px;color:var(--graphite);border-top:1px solid var(--rule);padding-top:16px;display:flex;flex-wrap:wrap;gap:6px 20px}
+footer a{color:var(--indigo)}
+@media (max-width:820px){.try{grid-template-columns:1fr}.bar{grid-template-columns:110px minmax(0,1fr) 40px}.wrap{padding-inline:16px}}
+@media (prefers-reduced-motion:no-preference){.fill{transition:width .5s ease}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <span class="eyebrow">Aangan Studio · Pune · AI phone desk</span>
+    <h1>Aangan Voice Desk</h1>
+    <p class="lede">Every call answered, day or night. The assistant checks Nikhil's five criteria, books the consultation and hands the designer a complete brief. It never quotes a price.</p>
+  </div>
+  <div class="status" id="status"><span class="pill">Checking system…</span></div>
+</header>
+
+<section>
+  <div class="sec-head">
+    <span class="eyebrow">Try it</span>
+    <h2>Replay a real enquiry from September</h2>
+    <p class="muted">Pick one of the 20 phone calls from the case. It runs through the live system: Claude reads the transcript, decides, assigns a designer and sends the Telegram handoff.</p>
+  </div>
+  <div class="try">
+    <div class="card controls">
+      <label for="testSel">Test call</label>
+      <select id="testSel"><option>Loading calls…</option></select>
+      <p class="muted" id="expected" style="font-size:13px"></p>
+      <div class="row">
+        <button id="runBtn" type="button">Replay this call</button>
+        <span class="muted" id="runMsg" style="font-size:13px"></span>
+      </div>
+      <details>
+        <summary>Or paste your own transcript</summary>
+        <div class="controls" style="margin-top:10px">
+          <label for="ownText">Transcript (Assistant: / Caller: lines)</label>
+          <textarea id="ownText">Assistant: Namaste, Aangan Studio. How can I help?
+Caller: Hi, I'm Kavya. We just got possession of a 2BHK in Baner, about 900 square feet, completely bare.
+Assistant: Congratulations! What would you like done?
+Caller: Full home. Kitchen, wardrobes, living room. We want to move in by February. Roughly what does that cost?
+Assistant: Pricing depends on the site, the materials you choose, and the scope. Your designer will walk you through it at the consultation. I can book that now.
+Caller: Okay. My husband and I both decide, we can both come. Saturday morning works.</textarea>
+          <button id="ownBtn" type="button" class="ghost">Run my transcript</button>
+        </div>
+      </details>
+    </div>
+    <div class="card result" id="result">
+      <div class="empty">The decision, the designer's Telegram brief and the outcome buttons appear here.</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <span class="eyebrow">For Nikhil</span>
+    <h2>What it's generating and what it costs</h2>
+    <p class="muted">Live from every call logged. No manual counting.</p>
+  </div>
+  <div class="tiles" id="tiles"></div>
+  <div class="grid3">
+    <div class="card"><h3>Funnel</h3><div class="bars" id="funnel" style="margin-top:12px"></div></div>
+    <div class="card"><h3>Cost</h3><div class="table-wrap" style="margin-top:8px"><table id="cost"></table></div></div>
+    <div class="card" id="signalsCard"><h3>Why not a fit, and signals</h3><div class="bars" id="reasons" style="margin-top:12px"></div><div class="bars" id="signals" style="margin-top:16px"></div></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <span class="eyebrow">Lead log</span>
+    <h2>Recent calls</h2>
+  </div>
+  <div class="card table-wrap" style="padding:6px 8px">
+    <table class="leads">
+      <thead><tr><th>When</th><th>Caller</th><th>Area</th><th>Decision</th><th>Designer</th><th>Flags</th><th>Outcome</th></tr></thead>
+      <tbody id="leadRows"><tr><td colspan="7" class="muted">No calls yet. Replay one above.</td></tr></tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  <span>Voice: Vaani · Brain: Claude Opus 5.5 · Handoff: Telegram · Data: Upstash Redis · Hosting: Vercel</span>
+  <a href="/components-map.html">Components map</a>
+  <a href="/api/health">System health</a>
+</footer>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const VERDICT = {qualified:"Qualified", not_fit:"Not a fit", nurture:"Follow up later", escalation:"Escalation", incomplete:"Missed / incomplete"};
+const NEXT = {
+  new:[["acc","✅ Accept"],["rea","↪️ Reassign"]], accepted:[["cal","📞 Called client"]],
+  called:[["cdn","🤝 Consult done"],["nsh","🚫 No-show"]], consulted:[["won","🏆 Won"],["lst","❌ Lost"]],
+  lost:[["lr:budget","Budget"],["lr:competitor","Chose another studio"],["lr:timing","Timing"],["lr:ghosted","Stopped responding"]],
+  closed:[]
+};
+let calls = [];
+
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const inr = (n) => "₹" + Math.round(n || 0).toLocaleString("en-IN");
+const lakh = (n) => n >= 100000 ? "₹" + (n/100000).toFixed(1) + "L" : inr(n);
+
+async function api(path, body) {
+  const r = await fetch(path, body ? {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)} : {});
+  const j = await r.json().catch(() => ({error: "Server returned " + r.status}));
+  if (!r.ok) throw new Error(j.error || ("HTTP " + r.status));
+  return j;
+}
+
+async function loadStatus() {
+  try {
+    const h = await api("/api/health");
+    $("status").innerHTML = [
+      `<span class="pill ${h.claude_key ? "ok" : "bad"}">Claude ${h.claude_key ? "connected" : "key missing"}</span>`,
+      `<span class="pill ${h.storage === "redis" ? "ok" : "bad"}">Storage: ${h.storage === "redis" ? "Redis" : "temporary"}</span>`,
+      `<span class="pill ${h.telegram ? "ok" : ""}">Telegram ${h.telegram ? "on" : "off"}</span>`
+    ].join("");
+  } catch (e) { $("status").innerHTML = `<span class="pill bad">API unreachable</span>`; }
+}
+
+async function loadCalls() {
+  try {
+    calls = (await api("/api/test-calls")).calls;
+    $("testSel").innerHTML = calls.map(c => `<option value="${c.id}">${c.id} · ${esc(c.title)}</option>`).join("");
+    showExpected();
+  } catch (e) { $("testSel").innerHTML = "<option>Could not load test calls</option>"; }
+}
+function showExpected() {
+  const c = calls.find(x => x.id === $("testSel").value);
+  $("expected").innerHTML = c ? `Expected: <span class="pill v-${c.expected}">${VERDICT[c.expected]}</span> ${esc(c.expected_reason)}` : "";
+}
+
+function stageOf(l) {
+  if (l.outcome) return "closed";
+  if (l.consult_done_at) return "consulted";
+  if (l.called_at) return "called";
+  if (l.accepted_at) return "accepted";
+  return "new";
+}
+
+function renderResult(l, stageOverride) {
+  const stage = stageOverride || stageOf(l);
+  const match = l.expected ? (l.matches_expected
+      ? `<span class="pill ok">Matches expected</span>`
+      : `<span class="pill bad">Expected ${VERDICT[l.expected]}</span>`) : "";
+  const tg = l.handoff_text
+    ? `<div><div class="tg-head"><span class="tg-dot">A</span>Telegram to ${esc(l.designer || "front desk")}</div><div class="tg">${l.handoff_text}</div></div>
+       <div><div class="eyebrow" style="margin-bottom:6px">Designer's buttons (same as Telegram)</div><div class="taps" id="taps">${
+         (NEXT[stage]||[]).map(([a,t]) => `<button type="button" class="ghost" data-act="${a}">${t}</button>`).join("") ||
+         `<span class="muted" style="font-size:13px">Closed: ${esc(l.outcome || "")}${l.project_value_inr ? " · " + lakh(l.project_value_inr) : ""}${l.lost_reason ? " · " + esc(l.lost_reason) : ""}</span>`
+       }</div></div>`
+    : `<p class="muted" style="font-size:14px">${{
+        not_fit:"Closed politely on the call. Logged with the reason, so Nikhil can review declines weekly.",
+        nurture:"Sent to the front desk's follow-up list with a date.",
+        escalation:"Sent straight to Nikhil: a senior callback within 15 minutes.",
+        incomplete:"Front desk gets a call-back alert."}[l.verdict] || ""}</p>`;
+  $("result").innerHTML = `
+    <div class="verdict-line"><span class="pill v-${l.verdict}">${VERDICT[l.verdict] || esc(l.verdict)}</span>${match}
+      <span class="muted" style="font-size:13px">${esc(l.lead_id)} · Claude cost ${inr(l.ai_cost_inr)}</span></div>
+    <p>${esc(l.summary)}</p>
+    <dl class="kv">
+      ${l.fail_reasons?.length ? `<dt>Why not</dt><dd>${esc(l.fail_reasons.join(", "))}</dd>` : ""}
+      ${l.flags?.length ? `<dt>Flags</dt><dd>${esc(l.flags.join(", "))}</dd>` : ""}
+      ${l.nurture_date ? `<dt>Follow up on</dt><dd>${esc(l.nurture_date)}</dd>` : ""}
+      ${l.criteria ? `<dt>Five checks</dt><dd>${Object.entries(l.criteria).map(([k,v]) => esc(k.replace(/^c\d_/,"").replace(/_/g," ")) + ": " + esc(v)).join(" · ")}</dd>` : ""}
+    </dl>${tg}`;
+  const taps = $("taps");
+  if (taps) taps.onclick = async (e) => {
+    const b = e.target.closest("button[data-act]"); if (!b) return;
+    taps.querySelectorAll("button").forEach(x => x.disabled = true);
+    try {
+      let r = await api(`/api/leads/${l.lead_id}/action`, {action: b.dataset.act});
+      if (b.dataset.act === "won") {
+        r = await api(`/api/leads/${l.lead_id}/action`, {action: "val:11.5"});
+        r.note = "Won · ₹11.5L recorded";
+      }
+      renderResult(Object.assign({}, l, r.lead, {expected: l.expected, matches_expected: l.matches_expected}), r.next_stage === "lost" ? "lost" : null);
+      refresh();
+    } catch (err) { $("runMsg").textContent = err.message; }
+  };
+}
+
+async function run(body) {
+  $("runBtn").disabled = $("ownBtn").disabled = true;
+  $("runMsg").textContent = "Claude is reading the call… (10–30 s)";
+  $("result").innerHTML = `<div class="empty">Reading the transcript, checking the five criteria, picking a designer…</div>`;
+  try {
+    const l = await api("/api/simulate", body);
+    renderResult(l);
+    $("runMsg").textContent = "";
+    refresh();
+  } catch (e) {
+    $("result").innerHTML = `<div class="empty">${esc(e.message)}</div>`;
+    $("runMsg").textContent = "";
+  } finally { $("runBtn").disabled = $("ownBtn").disabled = false; }
+}
+
+function bars(el, rows, max) {
+  const m = max || Math.max(1, ...rows.map(r => r[1]));
+  el.innerHTML = rows.map(([label, n, alert]) => `<div class="bar"><span>${label}</span><div class="track"><div class="fill" style="width:${(n/m*100).toFixed(0)}%;${alert ? "background:var(--warn)" : ""}"></div></div><span class="n">${n}</span></div>`).join("");
+}
+
+async function refresh() {
+  try {
+    const s = await api("/api/stats");
+    const f = s.funnel, c = s.cost;
+    $("tiles").innerHTML = [
+      [s.volume.calls, "calls answered"], [s.volume.after_hours, "after hours (missed before)"],
+      [f.qualified, "qualified leads"], [f.booked, "consults booked on the call"],
+      [lakh(f.won_value), "won project value"], [inr(c.total), "total cost to run"]
+    ].map(([b, t]) => `<div class="tile"><b>${b}</b><span>${t}</span></div>`).join("");
+    bars($("funnel"), [["Qualified", f.qualified], ["Booked on call", f.booked], ["Designer accepted", f.accepted],
+      ["Called client", f.called], ["Consult done", f.consult_done], ["Won", f.won]]);
+    $("cost").innerHTML = [
+      ["Voice minutes", c.voice], ["Claude", c.ai], ["Fixed (number etc.)", c.fixed_monthly]
+    ].map(([k, v]) => `<tr class="costrow"><td>${k}</td><td class="num">${inr(v)}</td></tr>`).join("") +
+      `<tr class="costrow total"><td>Total</td><td class="num">${inr(c.total)}</td></tr>` +
+      [["Per call", c.per_call], ["Per qualified lead", c.per_qualified], ["Per booked consult", c.per_booked], ["Per won project", c.per_won]]
+        .map(([k, v]) => `<tr class="costrow"><td>${k}</td><td class="num">${v ? inr(v) : "–"}</td></tr>`).join("") +
+      `<tr class="costrow total"><td>Return (won value ÷ cost)</td><td class="num">${c.return_multiple ? c.return_multiple + "×" : "–"}</td></tr>`;
+    const r = s.not_fit_reasons;
+    bars($("reasons"), [["Outside area", r.outside_area], ["Advice only", r.advice_only], ["Timeline", r.timeline_too_short],
+      ["Budget", r.budget_misaligned], ["Out of scope / small", r.out_of_scope_type + r.below_minimum_size]]);
+    const g = s.signals;
+    bars($("signals"), [["Asked about price", g.asked_price], ["Repeat callers", g.repeat_caller], ["Edge localities", g.edge_locality],
+      ["Price said by AI", g.price_spoken_by_agent, true]], Math.max(1, s.volume.calls));
+    $("signalsCard").classList.toggle("alert", g.price_spoken_by_agent > 0);
+
+    const leads = (await api("/api/leads")).leads;
+    $("leadRows").innerHTML = leads.length ? leads.map(l => `<tr data-id="${esc(l.lead_id)}">
+      <td>${new Date(l.received_at).toLocaleString("en-IN", {day:"numeric", month:"short", hour:"numeric", minute:"2-digit"})}${l.after_hours ? " 🌙" : ""}</td>
+      <td>${esc(l.caller_name || l.phone || "—")}</td><td>${esc(l.locality || "")}</td>
+      <td><span class="pill v-${l.verdict}">${VERDICT[l.verdict] || esc(l.verdict)}</span></td>
+      <td>${esc(l.designer || "")}</td>
+      <td><div class="flagchips">${(l.flags || []).map(x => `<span>#${esc(x)}</span>`).join("")}</div></td>
+      <td>${esc(l.outcome || (l.consult_booked ? "consult booked" : ""))}</td></tr>`).join("")
+      : `<tr><td colspan="7" class="muted">No calls yet. Replay one above.</td></tr>`;
+    $("leadRows").onclick = (e) => {
+      const tr = e.target.closest("tr[data-id]"); if (!tr) return;
+      const l = leads.find(x => x.lead_id === tr.dataset.id);
+      if (l) { renderResult(l); $("result").scrollIntoView({behavior: "smooth", block: "center"}); }
+    };
+  } catch (e) { $("tiles").innerHTML = `<div class="tile"><b>–</b><span>${esc(e.message)}</span></div>`; }
+}
+
+$("testSel").onchange = showExpected;
+$("runBtn").onclick = () => run({test_id: $("testSel").value});
+$("ownBtn").onclick = () => run({transcript: $("ownText").value});
+loadStatus(); loadCalls(); refresh();
+</script>
+</body>
+</html>
