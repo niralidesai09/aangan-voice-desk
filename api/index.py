@@ -416,8 +416,84 @@ def claude_extract(transcript, phone, started_at):
     return json.loads(text), round(usd * float(env("USD_INR", "84")), 2)
 
 
+GEMINI_MODELS = ["gemini-3.5-flash", "gemini-3.6-flash", "gemini-3-flash", "gemini-2.5-flash"]
+
+
+def gemini_extract(transcript, phone, started_at):
+    """Same job on Google Gemini (used when GEMINI_API_KEY is set and ANTHROPIC_API_KEY is not)."""
+    prompt = ("Call date and time (IST): %s\nCaller number: %s\n\nTranscript:\n%s\n\n"
+              "Reply with ONE JSON object only, matching this JSON Schema exactly (all keys required, use the enum values given):\n%s"
+              % (started_at.strftime("%A %d %B %Y, %I:%M %p"), phone or "unknown", transcript, json.dumps(LEAD_SCHEMA)))
+    body = json.dumps({
+        "systemInstruction": {"parts": [{"text": EXTRACT_SYSTEM}]},
+        "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+        "generationConfig": {"responseMimeType": "application/json", "temperature": 0.1},
+    }).encode()
+    models = [env("GEMINI_MODEL")] if env("GEMINI_MODEL") else GEMINI_MODELS
+    last_error = None
+    for model in models:
+        req = urllib.request.Request(
+            "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent" % model, data=body,
+            headers={"Content-Type": "application/json", "x-goog-api-key": env("GEMINI_API_KEY")})
+        try:
+            with urllib.request.urlopen(req, timeout=55) as r:
+                data = json.loads(r.read().decode())
+        except urllib.error.HTTPError as e:
+            last_error = "Gemini %s: %s %s" % (model, e.code, e.read().decode()[:200])
+            if e.code == 404:
+                continue  # model name not available on this key; try the next one
+            raise RuntimeError(last_error)
+        text = "".join(p.get("text", "") for p in data["candidates"][0]["content"]["parts"])
+        text = text.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+        u = data.get("usageMetadata", {})
+        usd = (u.get("promptTokenCount", 0) * float(env("GEMINI_IN_PER_MTOK_USD", "0.3")) +
+               u.get("candidatesTokenCount", 0) * float(env("GEMINI_OUT_PER_MTOK_USD", "2.5"))) / 1e6
+        return clean_lead(json.loads(text)), round(usd * float(env("USD_INR", "84")), 2)
+    raise RuntimeError(last_error or "No Gemini model available")
+
+
+def clean_lead(x):
+    """Coerce a model's JSON to the schema: fill missing keys, drop unknown enum values."""
+    out = {}
+    for k, spec in LEAD_SCHEMA["properties"].items():
+        v = x.get(k) if isinstance(x, dict) else None
+        if spec["type"] == "string":
+            v = "" if v is None else str(v)
+            if "enum" in spec and v not in spec["enum"]:
+                v = {"verdict": "incomplete", "decision_maker": "unclear", "in_service_area": "unsure"}.get(k, spec["enum"][-1])
+        elif spec["type"] == "integer":
+            try:
+                v = int(float(v or 0))
+            except (TypeError, ValueError):
+                v = 0
+        elif spec["type"] == "array":
+            v = [str(i) for i in (v if isinstance(v, list) else [])]
+            allowed = spec["items"].get("enum")
+            if allowed:
+                v = [i for i in v if i in allowed]
+        elif spec["type"] == "object":
+            v = v if isinstance(v, dict) else {}
+            v = {ck: (v.get(ck) if v.get(ck) in ("pass", "fail", "unclear") else "unclear") for ck in spec["properties"]}
+        out[k] = v
+    return out
+
+
+def ai_provider():
+    if env("ANTHROPIC_API_KEY"):
+        return "claude"
+    if env("GEMINI_API_KEY"):
+        return "gemini"
+    return ""
+
+
+def extract(transcript, phone, started_at):
+    if ai_provider() == "gemini":
+        return gemini_extract(transcript, phone, started_at)
+    return claude_extract(transcript, phone, started_at)
+
+
 # Tests swap this out so the pipeline can run without an API key.
-EXTRACTOR = {"fn": claude_extract}
+EXTRACTOR = {"fn": extract}
 
 PRICE_PATTERN = re.compile(r"(₹|\brs\.?\s*\d|\d+(\.\d+)?\s*(lakh|lac|k\b)|per\s*(sq|square))", re.I)
 STUDIO_SIDE = re.compile(r"^\s*(assistant|agent|bot|ai|front desk|studio)\s*:", re.I)
@@ -833,8 +909,10 @@ def app(environ, start_response):
 
 def dispatch(method, path, query, body, environ):
     if path == "/api/health":
-        return 200, {"ok": True, "model": MODEL, "storage": "redis" if store.persistent else "memory",
-                     "telegram": bool(env("TELEGRAM_BOT_TOKEN")), "claude_key": bool(env("ANTHROPIC_API_KEY"))}
+        return 200, {"ok": True, "ai": ai_provider() or "none",
+                     "model": MODEL if ai_provider() == "claude" else (env("GEMINI_MODEL") or GEMINI_MODELS[0]),
+                     "storage": "redis" if store.persistent else "memory",
+                     "telegram": bool(env("TELEGRAM_BOT_TOKEN")), "claude_key": bool(ai_provider())}
 
     if path.startswith("/api/vaani/"):
         if not authorised(environ, query):
