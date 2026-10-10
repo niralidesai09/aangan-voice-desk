@@ -4,345 +4,726 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Aangan Voice Desk</title>
+<meta name="description" content="Aangan Studio's AI phone desk: every call answered, qualified, booked and briefed, with outcomes flowing back into the loop.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,650;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: an operations console. Try-it panel first (replay a real call), then the numbers Nikhil reads, then the lead log. */
+/*
+  World: a Pune interior studio's material board. Kota stone green owns the hero and the loop,
+  brass marks what moves, laterite marks the Cut and anything a human must catch, lime plaster is the ground.
+  Scene: an instructor on a laptop in a daylit classroom, so light ground with one committed green field.
+*/
 :root{
-  --paper:#f5f6f3; --sheet:#ffffff; --ink:#1d2330; --graphite:#5a6170; --rule:#d9dcd6;
-  --indigo:#2f3f9e; --indigo-soft:#e7eaf7; --saffron:#8f4f06; --saffron-soft:#fbefdc;
-  --good:#24653f; --good-soft:#e3f2e8; --warn:#8e3815; --warn-soft:#f8e6df; --muted-soft:#eceee9;
-  --f-display:"Familjen Grotesk","Helvetica Neue",Arial,sans-serif;
-  --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --plaster:#DCDFD8; --slab:#ECEEE9; --paper:#F8F9F6; --line:#C6CAC1; --line-2:#B3B8AE;
+  --basalt:#1C211F; --stone:#4F5752; --stone-2:#666C67;
+  --kota:#24433A; --kota-2:#2F5447; --kota-3:#3E6757; --kota-ink:#E9EFE9; --kota-mute:#B3C5BB; --kota-line:rgba(233,239,233,.16);
+  --brass:#C9A04E; --brass-hi:#DDBB72; --brass-ink:#76571A; --brass-soft:#F1E6CC;
+  --laterite:#9A4123; --laterite-soft:#F3E0D7;
+  --leaf:#2A6542; --leaf-soft:#DDEBDF;
+  --f-display:"Bricolage Grotesque","Avenir Next","Segoe UI",sans-serif;
+  --f-body:"Figtree","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --f-data:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --r:10px; --ease:cubic-bezier(.16,1,.3,1);
   color-scheme:light;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --paper:#14171d; --sheet:#1c2028; --ink:#e7e9ee; --graphite:#a1a7b4; --rule:#323845;
-  --indigo:#9aa8ff; --indigo-soft:#262d4d; --saffron:#f0a64a; --saffron-soft:#3a2b17;
-  --good:#7fcf9c; --good-soft:#1d3326; --warn:#f08f6b; --warn-soft:#3b231b; --muted-soft:#262a33; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --paper:#14171d; --sheet:#1c2028; --ink:#e7e9ee; --graphite:#a1a7b4; --rule:#323845;
-  --indigo:#9aa8ff; --indigo-soft:#262d4d; --saffron:#f0a64a; --saffron-soft:#3a2b17;
-  --good:#7fcf9c; --good-soft:#1d3326; --warn:#f08f6b; --warn-soft:#3b231b; --muted-soft:#262a33; color-scheme:dark}
 *{box-sizing:border-box}
-html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
-.wrap{max-width:1180px;margin:0 auto;padding-inline:20px;padding-block:28px 64px;display:flex;flex-direction:column;gap:36px}
-h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:-.01em}
-h1{font-size:clamp(26px,3.6vw,36px)} h2{font-size:20px} h3{font-size:15px}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);scroll-behavior:smooth}
+body{margin:0;background:var(--plaster);color:var(--basalt);font-family:var(--f-body);font-size:15.5px;line-height:1.55;-webkit-font-smoothing:antialiased}
+::selection{background:var(--brass);color:var(--basalt)}
+*{scrollbar-color:var(--line-2) transparent;scrollbar-width:thin}
+h1,h2,h3,h4{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:-.02em;font-weight:650}
 p{margin:0}
-.eyebrow{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--graphite)}
-.muted{color:var(--graphite)}
-header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px;border-bottom:1px solid var(--rule);padding-bottom:20px}
-header .lede{max-width:62ch;color:var(--graphite);margin-top:6px}
-.status{display:flex;flex-wrap:wrap;gap:8px}
-.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:var(--muted-soft);color:var(--graphite);white-space:nowrap}
-.pill.ok{background:var(--good-soft);color:var(--good)} .pill.bad{background:var(--warn-soft);color:var(--warn)}
-.pill.v-qualified{background:var(--good-soft);color:var(--good)} .pill.v-not_fit{background:var(--warn-soft);color:var(--warn)}
-.pill.v-nurture{background:var(--saffron-soft);color:var(--saffron)} .pill.v-escalation{background:var(--warn-soft);color:var(--warn)}
-.pill.v-incomplete{background:var(--muted-soft);color:var(--graphite)}
-section{display:flex;flex-direction:column;gap:14px}
-.sec-head{display:flex;flex-direction:column;gap:4px}
-.card{background:var(--sheet);border:1px solid var(--rule);border-radius:8px;padding:18px;min-width:0}
+a{color:inherit;text-underline-offset:3px}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--brass);outline-offset:2px;border-radius:4px}
+.num{font-variant-numeric:tabular-nums}
+.data{font-family:var(--f-data);font-size:12px;letter-spacing:.01em}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:24px}
 
-/* try it */
-.try{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:20px;align-items:start}
-.controls{display:flex;flex-direction:column;gap:12px}
-label{font-weight:600;font-size:13px}
-select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:6px;padding:9px 10px}
-textarea{min-height:120px;font-size:13px;resize:vertical}
-.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-button{font:inherit;font-weight:600;font-size:14px;border-radius:6px;padding:9px 14px;cursor:pointer;border:1px solid var(--indigo);background:var(--indigo);color:var(--sheet)}
-button.ghost{background:transparent;color:var(--indigo)}
-button:disabled{opacity:.55;cursor:progress}
-button:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
-details summary{cursor:pointer;color:var(--indigo);font-weight:600;font-size:14px}
-.result{display:flex;flex-direction:column;gap:12px}
-.empty{color:var(--graphite);font-size:14px;padding:28px 8px;text-align:center;border:1px dashed var(--rule);border-radius:8px}
-.tg{background:var(--paper);border-radius:10px;padding:14px;font-size:13.5px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
-.tg-head{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--graphite);margin-bottom:6px}
-.tg-dot{width:22px;height:22px;border-radius:50%;background:var(--indigo);color:var(--sheet);display:grid;place-items:center;font-weight:700;font-size:11px}
-.taps{display:flex;flex-wrap:wrap;gap:6px}
-.taps button{font-size:13px;padding:7px 10px}
-.verdict-line{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:14px}
-.kv{display:grid;grid-template-columns:120px minmax(0,1fr);gap:4px 12px;font-size:13.5px}
-.kv dt{color:var(--graphite)} .kv dd{margin:0;overflow-wrap:anywhere}
+/* top bar */
+.bar{background:var(--kota);color:var(--kota-ink)}
+.bar .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding-block:16px}
+.mark{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-weight:800;font-size:18px;letter-spacing:-.01em}
+.mark svg{flex:none}
+.mark small{font-family:var(--f-body);font-weight:500;font-size:13px;color:var(--kota-mute);letter-spacing:0}
+.status{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;padding:4px 10px;border-radius:999px;border:1px solid var(--kota-line);color:var(--kota-mute);white-space:nowrap}
+.chip i{width:7px;height:7px;border-radius:50%;background:var(--kota-mute)}
+.chip.on{color:var(--kota-ink)} .chip.on i{background:#7FD49B}
+.chip.warn i{background:var(--brass)}
+
+/* hero: the loop */
+.hero{background:var(--kota);color:var(--kota-ink);padding-bottom:56px}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:40px;align-items:center;padding-top:28px}
+.hero h1{font-size:clamp(38px,5vw,66px);line-height:1.02;font-weight:800;letter-spacing:-.035em;max-width:12ch}
+.hero h1 em{font-style:normal;color:var(--brass-hi)}
+.hero .lede{margin-top:18px;max-width:46ch;font-size:17px;color:var(--kota-mute)}
+.compare{margin-top:28px;display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--kota-line)}
+.compare div{padding:14px 18px 0 0;display:flex;flex-direction:column;gap:2px}
+.compare div + div{padding-left:18px;border-left:1px solid var(--kota-line)}
+.compare b{font-family:var(--f-display);font-size:30px;font-weight:650;letter-spacing:-.02em}
+.compare span{font-size:13.5px;color:var(--kota-mute);max-width:26ch}
+.compare .now b{color:var(--brass-hi)}
+.cta{margin-top:30px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:12px 20px;font-weight:700;font-size:15px;border:1px solid transparent;text-decoration:none;transition:transform .2s var(--ease),background .2s,box-shadow .2s}
+.btn-brass{background:var(--brass);color:var(--basalt);box-shadow:0 6px 18px -8px rgba(0,0,0,.5)}
+.btn-brass:hover{transform:translateY(-1px);background:#D6AE5C}
+.btn-ghost-k{border-color:var(--kota-line);color:var(--kota-ink)}
+.btn-ghost-k:hover{background:var(--kota-2)}
+.btn:disabled{opacity:.6;cursor:progress;transform:none}
+
+.wheel{position:relative;width:100%;max-width:560px;justify-self:center}
+.wheel svg{width:100%;height:auto;display:block;overflow:visible}
+.w-track{fill:none;stroke:var(--kota-line);stroke-width:2}
+.w-flow{fill:none;stroke:var(--kota-3);stroke-width:14;opacity:.55}
+.w-run{fill:none;stroke:var(--brass);stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset 1.6s var(--ease),stroke .4s,stroke-width .4s}
+.w-run.stopped{stroke:#D98B6B}
+.w-node circle{fill:var(--kota);stroke:var(--kota-mute);stroke-width:1.5;transition:fill .5s,stroke .5s}
+.w-node.reached circle{fill:var(--brass);stroke:var(--brass)}
+.w-node.reached .w-count{fill:var(--basalt)}
+.w-node.stop circle{fill:#D98B6B;stroke:#D98B6B}
+.w-node.stop .w-count{fill:var(--basalt)}
+.w-count{font-family:var(--f-display);font-weight:800;font-size:17px;fill:var(--kota-ink);text-anchor:middle;dominant-baseline:central}
+.w-label{font-family:var(--f-body);font-weight:700;font-size:14px;fill:var(--kota-ink)}
+.w-sub{font-family:var(--f-body);font-size:12px;fill:var(--kota-mute)}
+.w-arrow{fill:var(--kota-mute)}
+.w-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:44%;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px}
+.w-center b{font-family:var(--f-display);font-weight:800;font-size:clamp(28px,3.8vw,46px);letter-spacing:-.03em;line-height:1;color:var(--kota-ink)}
+.w-center span{font-size:13px;color:var(--kota-mute);line-height:1.35}
+.w-center small{font-size:12px;color:var(--kota-mute)}
+.w-center .closed{display:none;margin-top:6px;font-weight:700;color:var(--brass-hi);font-size:13px}
+.wheel.loop-closed .w-center .closed{display:block}
+.wheel.loop-closed .w-run{stroke-width:9;filter:drop-shadow(0 2px 8px rgba(201,160,78,.5))}
+
+/* sections */
+section.block{padding-block:64px 8px}
+.head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px 32px;margin-bottom:22px}
+.head h2{font-size:clamp(28px,3vw,38px);letter-spacing:-.03em;font-weight:800}
+.head p{max-width:62ch;color:var(--stone)}
+
+/* replay theatre */
+.theatre{display:grid;grid-template-columns:290px minmax(0,1fr) minmax(0,1.1fr);gap:16px;align-items:stretch}
+.panel{background:var(--slab);border:1px solid var(--line);border-radius:var(--r);min-width:0;display:flex;flex-direction:column}
+.panel-h{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.panel-h h3{font-size:15.5px;font-weight:650;letter-spacing:-.01em}
+.calls{list-style:none;margin:0;padding:6px;overflow-y:auto;max-height:520px;flex:1}
+.calls li button{width:100%;text-align:left;background:none;border:0;border-radius:8px;padding:9px 10px;display:grid;grid-template-columns:34px minmax(0,1fr);gap:2px 8px;color:var(--basalt);transition:background .15s}
+.calls li button:hover{background:var(--plaster)}
+.calls li button[aria-pressed="true"]{background:var(--kota);color:var(--kota-ink)}
+.calls li button[aria-pressed="true"] .exp{color:var(--kota-mute)}
+.calls .id{font-family:var(--f-data);font-size:12px;grid-row:span 2;padding-top:2px;color:var(--stone-2)}
+.calls li button[aria-pressed="true"] .id{color:var(--brass)}
+.calls .t{font-size:14px;font-weight:600;line-height:1.3}
+.calls .exp{font-size:12.5px;color:var(--stone)}
+.own{border-top:1px solid var(--line);padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.own summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--kota-2)}
+.own[open]{gap:10px}
+textarea{width:100%;min-height:150px;font:inherit;font-size:13px;line-height:1.45;color:var(--basalt);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px;resize:vertical}
+textarea:focus{border-color:var(--kota-3)}
+.btn-k{background:var(--kota);color:var(--kota-ink)}
+.btn-k:hover{background:var(--kota-2)}
+.btn-line{border-color:var(--line-2);color:var(--basalt);background:var(--paper)}
+.btn-line:hover{border-color:var(--kota-3)}
+.btn-sm{padding:8px 16px;font-size:14px}
+
+.line{flex:1;overflow-y:auto;max-height:560px;min-height:360px;padding:16px;display:flex;flex-direction:column;gap:8px}
+.ring{display:flex;align-items:center;gap:8px;color:var(--stone);font-size:13px}
+.ring i{width:8px;height:8px;border-radius:50%;background:var(--stone-2)}
+.ring.live i{background:var(--leaf);animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.25}}
+.bub{max-width:88%;padding:8px 12px;border-radius:14px;font-size:14px;line-height:1.45;animation:in .35s var(--ease) both}
+.bub.caller{align-self:flex-start;background:var(--paper);border:1px solid var(--line);border-bottom-left-radius:4px}
+.bub.studio{align-self:flex-end;background:var(--kota);color:var(--kota-ink);border-bottom-right-radius:4px}
+.bub.note{align-self:center;color:var(--stone);font-size:12.5px;font-style:italic;text-align:center;max-width:95%}
+.bub .who{display:block;font-size:11.5px;font-weight:700;opacity:.75;margin-bottom:1px}
+@keyframes in{from{opacity:0;transform:translateY(6px)}}
+.idle{margin:auto;text-align:center;color:var(--stone);font-size:14px;max-width:30ch;display:flex;flex-direction:column;align-items:center;gap:12px}
+.again{display:flex;justify-content:center;padding-top:10px}
+
+.decide{padding:16px;display:flex;flex-direction:column;gap:14px;flex:1;overflow-y:auto;max-height:560px}
+.checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:8px;background:var(--paper)}
+.checks:empty{display:none}
+.checks li{display:grid;grid-template-columns:20px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 12px;font-size:14px;opacity:.38;transition:opacity .4s var(--ease)}
+.checks li + li{border-top:1px solid var(--line)}
+.checks li.lit{opacity:1}
+.checks .st{font-size:12.5px;font-weight:700;text-transform:capitalize}
+.checks .pass .st{color:var(--leaf)} .checks .fail .st{color:var(--laterite)} .checks .unclear .st{color:var(--brass-ink)}
+.ico{width:20px;height:20px;display:block}
+.verdict{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}
+.verdict b{font-family:var(--f-display);font-size:26px;font-weight:800;letter-spacing:-.02em}
+.v-qualified{color:var(--leaf)} .v-not_fit,.v-escalation{color:var(--laterite)} .v-nurture{color:var(--brass-ink)} .v-incomplete{color:var(--stone)}
+.tag{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--plaster);color:var(--stone)}
+.tag.ok{background:var(--leaf-soft);color:var(--leaf)} .tag.no{background:var(--laterite-soft);color:var(--laterite)}
+.summary{font-size:14.5px}
+.meta{font-size:13px;color:var(--stone)}
+.tg{border-radius:14px;background:var(--paper);border:1px solid var(--line);box-shadow:0 10px 24px -18px rgba(28,33,31,.45);overflow:hidden}
+.tg-top{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--plaster);font-size:12.5px;color:var(--stone)}
+.tg-top b{color:var(--basalt)}
+.tg-av{width:24px;height:24px;border-radius:50%;background:var(--kota);display:grid;place-items:center;flex:none}
+.tg-body{padding:12px 14px;font-size:13.5px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
+.taps{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1px;background:var(--line);border-top:1px solid var(--line)}
+.taps button{background:var(--paper);border:0;padding:11px 8px;font-weight:700;font-size:14px;color:var(--kota-2)}
+.taps button:hover{background:var(--slab)}
+.taps button:disabled{color:var(--stone-2);cursor:progress}
+.closedline{padding:10px 14px;border-top:1px solid var(--line);font-size:13px;color:var(--stone)}
+.routed{border:1px dashed var(--line-2);border-radius:8px;padding:12px 14px;font-size:14px;color:var(--stone)}
+.referral{border-radius:12px;background:var(--brass-soft);padding:14px;display:flex;flex-direction:column;gap:10px;animation:in .5s var(--ease) both}
+.referral h4{font-size:16.5px;font-weight:650}
+.referral p{font-size:14px}
+.referral .row{display:flex;flex-wrap:wrap;gap:8px}
+.err{color:var(--laterite);font-size:13.5px}
+
+/* Monday brief */
+.brief{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);background:var(--kota);color:var(--kota-ink);border-radius:16px;overflow:hidden}
+.brief-l{padding:30px;display:flex;flex-direction:column;gap:14px;border-right:1px solid var(--kota-line)}
+.brief-l h2{font-size:clamp(28px,3vw,36px);font-weight:800;letter-spacing:-.03em}
+.brief-l p{color:var(--kota-mute);max-width:40ch}
+.brief-r{padding:30px;display:flex;flex-direction:column;gap:16px;min-height:260px}
+.brief-r .hl{font-family:var(--f-display);font-size:22px;font-weight:650;letter-spacing:-.015em;line-height:1.25;color:var(--brass-hi)}
+.ins{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.ins li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:12px;padding:14px 0;border-top:1px solid var(--kota-line)}
+.ins .n{font-family:var(--f-display);font-weight:800;font-size:20px;color:var(--brass-hi);line-height:1.2}
+.ins h4{margin:0 0 2px;font-size:16.5px;font-weight:650}
+.ins .ev{font-size:13.5px;color:var(--kota-mute)}
+.ins .act{margin-top:6px;font-size:14px}
+.ins .act b{color:var(--brass-hi)}
+.brief-r .placeholder{margin:auto 0;color:var(--kota-mute);font-size:15px;max-width:52ch}
+.brief-r .placeholder.bad{color:#F2B9A2}
+.brief-meta{font-size:12.5px;color:var(--kota-mute)}
 
 /* numbers */
-.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
-.tile{background:var(--sheet);border:1px solid var(--rule);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:2px}
-.tile b{font-family:var(--f-display);font-size:28px;font-weight:600;font-variant-numeric:tabular-nums}
-.tile span{font-size:13px;color:var(--graphite)}
-.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;align-items:start}
-.bars{display:flex;flex-direction:column;gap:8px}
-.bar{display:grid;grid-template-columns:150px minmax(0,1fr) 44px;gap:10px;align-items:center;font-size:13.5px}
-.bar .track{height:10px;background:var(--muted-soft);border-radius:5px;overflow:hidden}
-.bar .fill{height:100%;background:var(--indigo);border-radius:5px}
-.bar .n{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
-table{border-collapse:collapse;width:100%;font-size:13.5px}
-th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--rule);vertical-align:top}
-th{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--graphite);font-weight:500}
-td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-tr:last-child td{border-bottom:0}
-.costrow td:first-child{color:var(--graphite)}
-.costrow.total td{font-weight:700;color:var(--ink)}
-.table-wrap{overflow-x:auto}
-.leads tbody tr{cursor:pointer}
-.leads tbody tr:hover{background:var(--paper)}
-.flagchips{display:flex;flex-wrap:wrap;gap:4px}
-.flagchips span{font-family:var(--f-mono);font-size:11px;color:var(--graphite)}
-.alert{border-color:var(--warn);background:var(--warn-soft)}
-footer{font-size:13px;color:var(--graphite);border-top:1px solid var(--rule);padding-top:16px;display:flex;flex-wrap:wrap;gap:6px 20px}
-footer a{color:var(--indigo)}
-@media (max-width:820px){.try{grid-template-columns:1fr}.bar{grid-template-columns:110px minmax(0,1fr) 40px}.wrap{padding-inline:16px}}
-@media (prefers-reduced-motion:no-preference){.fill{transition:width .5s ease}}
+.numbers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.numbers .panel{padding:20px}
+.numbers h3{font-size:17px;margin-bottom:12px}
+.ledger{width:100%;border-collapse:collapse;font-size:14px}
+.ledger td{padding:7px 0;border-bottom:1px dotted var(--line-2)}
+.ledger td:last-child{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.ledger tr.sum td{border-bottom:0;border-top:1.5px solid var(--basalt);font-weight:800;padding-top:9px}
+.ledger tr.sub td{color:var(--stone);font-weight:500}
+.ledger tr.sub td:last-child{color:var(--basalt)}
+.bars{display:flex;flex-direction:column;gap:12px}
+.barrow{display:grid;grid-template-columns:minmax(0,1fr) 34px;gap:4px 10px;font-size:14px;align-items:center}
+.barrow .tr{grid-column:1 / -1;height:8px;border-radius:4px;background:var(--plaster);overflow:hidden}
+.barrow .fl{height:100%;border-radius:4px;background:var(--kota-3);transition:width .8s var(--ease)}
+.barrow .v{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.cut{gap:12px}
+.cut p{font-size:14px;color:var(--stone)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pair div{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.pair b{font-family:var(--f-display);font-size:30px;font-weight:800;display:block;line-height:1.1}
+.pair span{font-size:12.5px;color:var(--stone)}
+.holding{color:var(--leaf)} .broken{color:var(--laterite)}
+
+/* log */
+.log{overflow-x:auto;background:var(--slab);border:1px solid var(--line);border-radius:var(--r)}
+.log table{width:100%;border-collapse:collapse;font-size:14px;min-width:780px}
+.log th{text-align:left;font-size:12.5px;font-weight:700;color:var(--stone);padding:12px 14px;border-bottom:1px solid var(--line)}
+.log td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+.log tr:last-child td{border-bottom:0}
+.log tbody tr[data-id]{cursor:pointer;transition:background .15s}
+.log tbody tr[data-id]:hover{background:var(--paper)}
+.flags{display:flex;flex-wrap:wrap;gap:4px}
+.flags span{font-size:11.5px;padding:2px 7px;border-radius:999px;background:var(--plaster);color:var(--stone)}
+
+footer{margin-top:72px;background:var(--basalt);color:#BCC2BD;font-size:13.5px}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px 32px;padding-block:28px}
+footer a{color:var(--brass)}
+
+@media (max-width:1080px){
+  .theatre{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .theatre > .panel:first-child{grid-column:1 / -1}
+  .calls{max-height:250px}
+  .numbers{grid-template-columns:1fr 1fr}
+}
+@media (max-width:860px){
+  .hero .wrap{grid-template-columns:1fr}
+  .wheel{max-width:480px}
+  .brief{grid-template-columns:1fr}
+  .brief-l{border-right:0;border-bottom:1px solid var(--kota-line)}
+}
+@media (max-width:680px){
+  .wrap{padding-inline:16px}
+  .theatre,.numbers{grid-template-columns:1fr}
+  .compare b{font-size:24px}
+  .w-label{font-size:17px} .w-sub{display:none} .w-count{font-size:19px}
+  .brief-l,.brief-r{padding:22px}
+  .brief-r{min-height:0}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
 </style>
 </head>
 <body>
-<div class="wrap">
 
-<header>
-  <div>
-    <span class="eyebrow">Aangan Studio · Pune · AI phone desk</span>
-    <h1>Aangan Voice Desk</h1>
-    <p class="lede">Every call answered, day or night. The assistant checks Nikhil's five criteria, books the consultation and hands the designer a complete brief. It never quotes a price.</p>
+<div class="bar">
+  <div class="wrap">
+    <div class="mark">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="11" fill="none" stroke="#C9A04E" stroke-width="2.2" stroke-dasharray="58 11" transform="rotate(-60 13 13)"/><circle cx="13" cy="2" r="2.6" fill="#C9A04E"/></svg>
+      <span>Aangan Voice Desk <small>· Aangan Studio, Pune</small></span>
+    </div>
+    <div class="status" id="status"><span class="chip">Checking the desk…</span></div>
   </div>
-  <div class="status" id="status"><span class="pill">Checking system…</span></div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <div>
+      <h1>No call falls out of the <em>loop</em>.</h1>
+      <p class="lede">Every call to Aangan Studio is answered, day or night. The desk checks Nikhil's five criteria, books the consultation and briefs the designer. Every outcome, and every referral it earns, flows back round to bring in the next call.</p>
+      <div class="compare">
+        <div><b>48%</b><span>of enquiries got no reply within 48 hours, before</span></div>
+        <div class="now"><b>Seconds</b><span>to answer now, including the third that arrive after 7pm</span></div>
+      </div>
+      <div class="cta">
+        <a class="btn btn-brass" href="#replay">Replay a real call</a>
+        <a class="btn btn-ghost-k" href="/components-map.html">See how it's built</a>
+      </div>
+    </div>
+    <div class="wheel" id="wheel">
+      <svg viewBox="-90 -40 700 600" role="img" aria-labelledby="wheelTitle">
+        <title id="wheelTitle">The flywheel: call answered, qualified, booked, designer briefed, designer picked up, consult done, won, referral asked, and back to the next call. Counts are live.</title>
+        <circle class="w-track" cx="260" cy="260" r="200"/>
+        <circle class="w-flow" cx="260" cy="260" r="200"/>
+        <circle class="w-run" id="wRun" cx="260" cy="260" r="200" transform="rotate(-90 260 260)"/>
+        <g id="wArrows"></g>
+        <g id="wNodes"></g>
+      </svg>
+      <div class="w-center">
+        <b class="num" id="rescued">₹0</b>
+        <span>pipeline from after-hours calls that used to ring out</span>
+        <small id="rescuedNote">Replay a call to start the loop</small>
+        <span class="closed">Loop closed: the referral is out</span>
+      </div>
+    </div>
+  </div>
 </header>
 
-<section>
-  <div class="sec-head">
-    <span class="eyebrow">Try it</span>
-    <h2>Replay a real enquiry from September</h2>
-    <p class="muted">Pick one of the 20 phone calls from the case. It runs through the live system: Claude reads the transcript, decides, assigns a designer and sends the Telegram handoff.</p>
+<main>
+<section class="block wrap" id="replay" aria-labelledby="replayH">
+  <div class="head">
+    <h2 id="replayH">Replay a September call</h2>
+    <p>These are the 20 real calls from the case. Pick one and watch it go through the live system: the AI reads the call, checks the five criteria, picks a designer and writes the brief. Then tap the designer's buttons yourself to close the loop.</p>
   </div>
-  <div class="try">
-    <div class="card controls">
-      <label for="testSel">Test call</label>
-      <select id="testSel"><option>Loading calls…</option></select>
-      <p class="muted" id="expected" style="font-size:13px"></p>
-      <div class="row">
-        <button id="runBtn" type="button">Replay this call</button>
-        <span class="muted" id="runMsg" style="font-size:13px"></span>
-      </div>
-      <details>
-        <summary>Or paste your own transcript</summary>
-        <div class="controls" style="margin-top:10px">
-          <label for="ownText">Transcript (Assistant: / Caller: lines)</label>
-          <textarea id="ownText">Assistant: Namaste, Aangan Studio. How can I help?
+  <div class="theatre">
+    <div class="panel">
+      <div class="panel-h"><h3>Pick a call</h3><span class="meta" id="callCount"></span></div>
+      <ul class="calls" id="calls"><li class="meta" style="padding:12px">Loading calls…</li></ul>
+      <details class="own">
+        <summary>Or write your own call</summary>
+        <label class="meta" for="ownText">One line per turn, starting with Caller: or Assistant:</label>
+        <textarea id="ownText">Assistant: Namaste, Aangan Studio. How can I help?
 Caller: Hi, I'm Kavya. We just got possession of a 2BHK in Baner, about 900 square feet, completely bare.
 Assistant: Congratulations! What would you like done?
 Caller: Full home. Kitchen, wardrobes, living room. We want to move in by February. Roughly what does that cost?
 Assistant: Pricing depends on the site, the materials you choose, and the scope. Your designer will walk you through it at the consultation. I can book that now.
 Caller: Okay. My husband and I both decide, we can both come. Saturday morning works.</textarea>
-          <button id="ownBtn" type="button" class="ghost">Run my transcript</button>
-        </div>
+        <button class="btn btn-line btn-sm" id="ownBtn" type="button">Play my call</button>
       </details>
     </div>
-    <div class="card result" id="result">
-      <div class="empty">The decision, the designer's Telegram brief and the outcome buttons appear here.</div>
+
+    <div class="panel">
+      <div class="panel-h"><h3>On the line</h3><span class="ring" id="ring"><i></i><span id="ringText">Waiting</span></span></div>
+      <div class="line" id="line">
+        <div class="idle">
+          <svg width="40" height="40" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.2 15.2 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          <span>Pick a call from the list, then play it here.</span>
+          <button class="btn btn-k btn-sm" data-play type="button">Play T01</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-h"><h3>What the desk decided</h3><span class="meta" id="leadId"></span></div>
+      <div class="decide">
+        <ul class="checks" id="checks"></ul>
+        <div id="outcome"><p class="meta">The five checks light up here, then the decision, the designer's Telegram brief and their buttons.</p></div>
+      </div>
     </div>
   </div>
 </section>
 
-<section>
-  <div class="sec-head">
-    <span class="eyebrow">For Nikhil</span>
-    <h2>What it's generating and what it costs</h2>
-    <p class="muted">Live from every call logged. No manual counting.</p>
-  </div>
-  <div class="tiles" id="tiles"></div>
-  <div class="grid3">
-    <div class="card"><h3>Funnel</h3><div class="bars" id="funnel" style="margin-top:12px"></div></div>
-    <div class="card"><h3>Cost</h3><div class="table-wrap" style="margin-top:8px"><table id="cost"></table></div></div>
-    <div class="card" id="signalsCard"><h3>Why not a fit, and signals</h3><div class="bars" id="reasons" style="margin-top:12px"></div><div class="bars" id="signals" style="margin-top:16px"></div></div>
+<section class="block wrap" aria-labelledby="briefH">
+  <div class="brief">
+    <div class="brief-l">
+      <h2 id="briefH">Nikhil's Monday brief</h2>
+      <p>The AI reads every logged call and the numbers below, then tells Nikhil three changes that would turn more calls into won projects. It never suggests quoting a price.</p>
+      <div><button class="btn btn-brass" id="briefBtn" type="button">Write this week's brief</button></div>
+      <span class="brief-meta" id="briefMeta"></span>
+    </div>
+    <div class="brief-r" id="briefOut">
+      <p class="placeholder">Replay a few calls first so there's something to read. A good mix is T01, T07, T10 and T13.</p>
+    </div>
   </div>
 </section>
 
-<section>
-  <div class="sec-head">
-    <span class="eyebrow">Lead log</span>
-    <h2>Recent calls</h2>
+<section class="block wrap" aria-labelledby="numH">
+  <div class="head">
+    <h2 id="numH">What it costs, and what it brings in</h2>
+    <p>Live from every logged call. Nikhil pulled these numbers by hand last month; he doesn't have to any more.</p>
   </div>
-  <div class="card table-wrap" style="padding:6px 8px">
-    <table class="leads">
-      <thead><tr><th>When</th><th>Caller</th><th>Area</th><th>Decision</th><th>Designer</th><th>Flags</th><th>Outcome</th></tr></thead>
-      <tbody id="leadRows"><tr><td colspan="7" class="muted">No calls yet. Replay one above.</td></tr></tbody>
+  <div class="numbers">
+    <div class="panel">
+      <h3>Running cost</h3>
+      <table class="ledger"><tbody id="ledger"></tbody></table>
+    </div>
+    <div class="panel">
+      <h3>Why callers weren't a fit</h3>
+      <div class="bars" id="reasons"></div>
+    </div>
+    <div class="panel cut">
+      <h3>The Cut: no prices on calls</h3>
+      <div class="pair">
+        <div><b class="num" id="askedPrice">0</b><span>callers asked about price</span></div>
+        <div><b class="num holding" id="saidPrice">0</b><span>prices the AI said</span></div>
+      </div>
+      <p id="cutLine">Nikhil asked for per-sq-ft quotes. His own pricing rules forbid it, so the desk deflects and books the consult instead, and a guardrail checks every transcript for a ₹ figure.</p>
+    </div>
+  </div>
+</section>
+
+<section class="block wrap" aria-labelledby="logH">
+  <div class="head">
+    <h2 id="logH">Every call, logged</h2>
+    <p>Click a row to open its decision and brief.</p>
+  </div>
+  <div class="log">
+    <table>
+      <thead><tr><th>When</th><th>Caller</th><th>Area</th><th>Decision</th><th>Designer</th><th>Flags</th><th>Where it is</th></tr></thead>
+      <tbody id="rows"><tr><td colspan="7" class="meta">No calls yet. Replay one above.</td></tr></tbody>
     </table>
   </div>
 </section>
+</main>
 
 <footer>
-  <span>Voice: Vaani · Brain: Claude Opus 5.5 · Handoff: Telegram · Data: Upstash Redis · Hosting: Vercel</span>
-  <a href="/components-map.html">Components map</a>
-  <a href="/desk/health">System health</a>
+  <div class="wrap">
+    <span>Voice: Vaani · Reading calls: Gemini or Claude · Handoff: Telegram · Hosting: Vercel</span>
+    <span><a href="/components-map.html">Components map</a> · <a href="https://github.com/niralidesai09/aangan-voice-desk">Code</a> · <a href="/desk/health">Desk health</a></span>
+  </div>
 </footer>
-</div>
 
 <script>
 const $ = (id) => document.getElementById(id);
-const VERDICT = {qualified:"Qualified", not_fit:"Not a fit", nurture:"Follow up later", escalation:"Escalation", incomplete:"Missed / incomplete"};
-const NEXT = {
-  new:[["acc","✅ Accept"],["rea","↪️ Reassign"]], accepted:[["cal","📞 Called client"]],
-  called:[["cdn","🤝 Consult done"],["nsh","🚫 No-show"]], consulted:[["won","🏆 Won"],["lst","❌ Lost"]],
-  lost:[["lr:budget","Budget"],["lr:competitor","Chose another studio"],["lr:timing","Timing"],["lr:ghosted","Stopped responding"]],
-  closed:[]
-};
-let calls = [];
-
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const inr = (n) => "₹" + Math.round(n || 0).toLocaleString("en-IN");
-const lakh = (n) => n >= 100000 ? "₹" + (n/100000).toFixed(1) + "L" : inr(n);
+const money = (n) => n >= 1e7 ? "₹" + (n / 1e7).toFixed(1) + " Cr" : n >= 1e5 ? "₹" + (n / 1e5).toFixed(n >= 1e6 ? 0 : 1) + "L" : inr(n);
+const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const sleep = (ms) => new Promise(r => setTimeout(r, REDUCED ? 0 : ms));
+const VERDICT = {qualified:"Qualified", not_fit:"Not a fit", nurture:"Follow up later", escalation:"Escalated to Nikhil", incomplete:"Missed call"};
+const CHECKS = [["c1_real_project","Real project, with execution"],["c2_service_area","In Pune or PCMC"],["c3_timeline","Realistic timeline"],["c4_budget","Budget not clearly too low"],["c5_decision_maker","Decision-maker on the call"]];
+const ICON = {
+  pass:'<svg class="ico" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="#DDEBDF"/><path d="M6 10.3l2.6 2.6L14 7.5" fill="none" stroke="#2A6542" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  fail:'<svg class="ico" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="#F3E0D7"/><path d="M7 7l6 6M13 7l-6 6" stroke="#9A4123" stroke-width="2" stroke-linecap="round"/></svg>',
+  unclear:'<svg class="ico" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="#F1E6CC"/><path d="M6.5 10h7" stroke="#76571A" stroke-width="2" stroke-linecap="round"/></svg>'
+};
 
-async function api(path, body) {
-  const r = await fetch(path, body ? {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)} : {});
-  const j = await r.json().catch(() => ({error: "Server returned " + r.status}));
-  if (!r.ok) throw new Error(j.error || ("HTTP " + r.status));
-  return j;
+/* ---------- the flywheel ---------- */
+const STATIONS = [
+  ["calls","Call answered","day or night"], ["qualified","Qualified","five checks"], ["booked","Booked","on the call"],
+  ["briefed","Designer briefed","on Telegram"], ["accepted","Picked up","within 60 min"], ["consult_done","Consult done","site or studio"],
+  ["won","Won","₹ value logged"], ["referral_asked","Referral asked","brings the next call"]
+];
+const R = 200, C = 2 * Math.PI * R;
+function polar(i, r = R) { const a = (i / STATIONS.length) * 2 * Math.PI - Math.PI / 2; return [260 + r * Math.cos(a), 260 + r * Math.sin(a), a]; }
+function drawWheel() {
+  let nodes = "", arrows = "";
+  STATIONS.forEach(([key, label, sub], i) => {
+    const [x, y, a] = polar(i);
+    const [lx, ly] = polar(i, R + 42);
+    const cos = Math.cos(a), sin = Math.sin(a);
+    const anchor = Math.abs(cos) < .2 ? "middle" : (cos > 0 ? "start" : "end");
+    const dy = sin < -.9 ? -16 : sin > .9 ? 10 : -4;
+    nodes += `<g class="w-node" id="node-${key}"><circle cx="${x}" cy="${y}" r="24"/><text class="w-count num" x="${x}" y="${y}" id="cnt-${key}">0</text>
+      <text class="w-label" x="${lx}" y="${ly + dy}" text-anchor="${anchor}">${label}</text>
+      <text class="w-sub" x="${lx}" y="${ly + dy + 16}" text-anchor="${anchor}">${sub}</text></g>`;
+    const [ax, ay, aa] = polar(i + .5);
+    arrows += `<path class="w-arrow" d="M-5,-6 L6,0 L-5,6 Z" transform="translate(${ax.toFixed(1)} ${ay.toFixed(1)}) rotate(${(aa * 180 / Math.PI + 90).toFixed(1)})"/>`;
+  });
+  $("wNodes").innerHTML = nodes; $("wArrows").innerHTML = arrows;
+  const run = $("wRun"); run.style.strokeDasharray = C; run.style.strokeDashoffset = C;
+}
+/* reached = how many stations this call has passed; stop = index of the station where it left the loop */
+function runWheel(reached, stop) {
+  const closed = reached >= STATIONS.length;
+  $("wheel").classList.toggle("loop-closed", closed);
+  STATIONS.forEach(([key], i) => {
+    const g = $("node-" + key);
+    g.classList.toggle("reached", i < reached && i !== stop);
+    g.classList.toggle("stop", i === stop);
+  });
+  const run = $("wRun");
+  run.classList.toggle("stopped", stop != null);
+  const frac = closed ? 1 : Math.max(0, reached - 1) / STATIONS.length;
+  run.style.strokeDashoffset = C * (1 - frac);
+}
+function wheelFor(l) {
+  if (l.verdict === "incomplete") return runWheel(1, 0);
+  if (l.verdict !== "qualified") return runWheel(2, 1);
+  const reached = l.referral_asked_at ? 8 : l.outcome === "won" ? 7 : l.outcome ? 6 : l.consult_done_at ? 6
+    : l.accepted_at ? 5 : 4;
+  runWheel(reached, l.outcome && l.outcome !== "won" ? reached - 1 : null);
 }
 
+/* ---------- data ---------- */
+async function api(path, body) {
+  const r = await fetch(path, body ? {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)} : {});
+  const j = await r.json().catch(() => ({error: "The desk returned " + r.status}));
+  if (!r.ok) throw new Error(j.error || ("The desk returned " + r.status));
+  return j;
+}
 async function loadStatus() {
   try {
     const h = await api("/desk/health");
-    $("status").innerHTML = [
-      `<span class="pill ${h.claude_key ? "ok" : "bad"}">${h.claude_key ? "AI: " + (h.ai === "gemini" ? "Gemini" : "Claude") + " connected" : "AI key missing"}</span>`,
-      `<span class="pill ${h.storage === "redis" ? "ok" : "bad"}">Storage: ${h.storage === "redis" ? "Redis" : "temporary"}</span>`,
-      `<span class="pill ${h.telegram ? "ok" : ""}">Telegram ${h.telegram ? "on" : "off"}</span>`
-    ].join("");
-  } catch (e) { $("status").innerHTML = `<span class="pill bad">API unreachable</span>`; }
+    const ai = h.ai === "gemini" ? "Gemini" : h.ai === "claude" ? "Claude" : null;
+    $("status").innerHTML =
+      `<span class="chip ${ai ? "on" : "warn"}"><i></i>${ai ? ai + " reading calls" : "No AI key yet"}</span>` +
+      `<span class="chip ${h.storage === "redis" ? "on" : "warn"}"><i></i>${h.storage === "redis" ? "Memory: permanent" : "Memory: temporary"}</span>` +
+      `<span class="chip ${h.telegram ? "on" : ""}"><i></i>${h.telegram ? "Telegram on" : "Telegram mirrored here"}</span>`;
+  } catch (e) { $("status").innerHTML = `<span class="chip warn"><i></i>Desk unreachable</span>`; }
 }
-
-async function loadCalls() {
-  try {
-    calls = (await api("/desk/test-calls")).calls;
-    $("testSel").innerHTML = calls.map(c => `<option value="${c.id}">${c.id} · ${esc(c.title)}</option>`).join("");
-    showExpected();
-  } catch (e) { $("testSel").innerHTML = "<option>Could not load test calls</option>"; }
+function bars(el, rows) {
+  const max = Math.max(1, ...rows.map(r => r[1]));
+  el.innerHTML = rows.map(([label, n]) => `<div class="barrow"><span>${label}</span><span class="v">${n}</span><div class="tr"><div class="fl" style="width:${(n / max * 100).toFixed(0)}%"></div></div></div>`).join("");
 }
-function showExpected() {
-  const c = calls.find(x => x.id === $("testSel").value);
-  $("expected").innerHTML = c ? `Expected: <span class="pill v-${c.expected}">${VERDICT[c.expected]}</span> ${esc(c.expected_reason)}` : "";
-}
-
-function stageOf(l) {
-  if (l.outcome) return "closed";
-  if (l.consult_done_at) return "consulted";
-  if (l.called_at) return "called";
-  if (l.accepted_at) return "accepted";
-  return "new";
-}
-
-function renderResult(l, stageOverride) {
-  const stage = stageOverride || stageOf(l);
-  const match = l.expected ? (l.matches_expected
-      ? `<span class="pill ok">Matches expected</span>`
-      : `<span class="pill bad">Expected ${VERDICT[l.expected]}</span>`) : "";
-  const tg = l.handoff_text
-    ? `<div><div class="tg-head"><span class="tg-dot">A</span>Telegram to ${esc(l.designer || "front desk")}</div><div class="tg">${l.handoff_text}</div></div>
-       <div><div class="eyebrow" style="margin-bottom:6px">Designer's buttons (same as Telegram)</div><div class="taps" id="taps">${
-         (NEXT[stage]||[]).map(([a,t]) => `<button type="button" class="ghost" data-act="${a}">${t}</button>`).join("") ||
-         `<span class="muted" style="font-size:13px">Closed: ${esc(l.outcome || "")}${l.project_value_inr ? " · " + lakh(l.project_value_inr) : ""}${l.lost_reason ? " · " + esc(l.lost_reason) : ""}</span>`
-       }</div></div>`
-    : `<p class="muted" style="font-size:14px">${{
-        not_fit:"Closed politely on the call. Logged with the reason, so Nikhil can review declines weekly.",
-        nurture:"Sent to the front desk's follow-up list with a date.",
-        escalation:"Sent straight to Nikhil: a senior callback within 15 minutes.",
-        incomplete:"Front desk gets a call-back alert."}[l.verdict] || ""}</p>`;
-  $("result").innerHTML = `
-    <div class="verdict-line"><span class="pill v-${l.verdict}">${VERDICT[l.verdict] || esc(l.verdict)}</span>${match}
-      <span class="muted" style="font-size:13px">${esc(l.lead_id)} · Claude cost ${inr(l.ai_cost_inr)}</span></div>
-    <p>${esc(l.summary)}</p>
-    <dl class="kv">
-      ${l.fail_reasons?.length ? `<dt>Why not</dt><dd>${esc(l.fail_reasons.join(", "))}</dd>` : ""}
-      ${l.flags?.length ? `<dt>Flags</dt><dd>${esc(l.flags.join(", "))}</dd>` : ""}
-      ${l.nurture_date ? `<dt>Follow up on</dt><dd>${esc(l.nurture_date)}</dd>` : ""}
-      ${l.criteria ? `<dt>Five checks</dt><dd>${Object.entries(l.criteria).map(([k,v]) => esc(k.replace(/^c\d_/,"").replace(/_/g," ")) + ": " + esc(v)).join(" · ")}</dd>` : ""}
-    </dl>${tg}`;
-  const taps = $("taps");
-  if (taps) taps.onclick = async (e) => {
-    const b = e.target.closest("button[data-act]"); if (!b) return;
-    taps.querySelectorAll("button").forEach(x => x.disabled = true);
-    try {
-      let r = await api(`/desk/leads/${l.lead_id}/action`, {action: b.dataset.act});
-      if (b.dataset.act === "won") {
-        r = await api(`/desk/leads/${l.lead_id}/action`, {action: "val:11.5"});
-        r.note = "Won · ₹11.5L recorded";
-      }
-      renderResult(Object.assign({}, l, r.lead, {expected: l.expected, matches_expected: l.matches_expected}), r.next_stage === "lost" ? "lost" : null);
-      refresh();
-    } catch (err) { $("runMsg").textContent = err.message; }
-  };
-}
-
-async function run(body) {
-  $("runBtn").disabled = $("ownBtn").disabled = true;
-  $("runMsg").textContent = "Claude is reading the call… (10–30 s)";
-  $("result").innerHTML = `<div class="empty">Reading the transcript, checking the five criteria, picking a designer…</div>`;
-  try {
-    const l = await api("/desk/simulate", body);
-    renderResult(l);
-    $("runMsg").textContent = "";
-    refresh();
-  } catch (e) {
-    $("result").innerHTML = `<div class="empty">${esc(e.message)}</div>`;
-    $("runMsg").textContent = "";
-  } finally { $("runBtn").disabled = $("ownBtn").disabled = false; }
-}
-
-function bars(el, rows, max) {
-  const m = max || Math.max(1, ...rows.map(r => r[1]));
-  el.innerHTML = rows.map(([label, n, alert]) => `<div class="bar"><span>${label}</span><div class="track"><div class="fill" style="width:${(n/m*100).toFixed(0)}%;${alert ? "background:var(--warn)" : ""}"></div></div><span class="n">${n}</span></div>`).join("");
-}
-
+let lastStats = null;
 async function refresh() {
   try {
     const s = await api("/desk/stats");
-    const f = s.funnel, c = s.cost;
-    $("tiles").innerHTML = [
-      [s.volume.calls, "calls answered"], [s.volume.after_hours, "after hours (missed before)"],
-      [f.qualified, "qualified leads"], [f.booked, "consults booked on the call"],
-      [lakh(f.won_value), "won project value"], [inr(c.total), "total cost to run"]
-    ].map(([b, t]) => `<div class="tile"><b>${b}</b><span>${t}</span></div>`).join("");
-    bars($("funnel"), [["Qualified", f.qualified], ["Booked on call", f.booked], ["Designer accepted", f.accepted],
-      ["Called client", f.called], ["Consult done", f.consult_done], ["Won", f.won]]);
-    $("cost").innerHTML = [
-      ["Voice minutes", c.voice], ["Claude", c.ai], ["Fixed (number etc.)", c.fixed_monthly]
-    ].map(([k, v]) => `<tr class="costrow"><td>${k}</td><td class="num">${inr(v)}</td></tr>`).join("") +
-      `<tr class="costrow total"><td>Total</td><td class="num">${inr(c.total)}</td></tr>` +
-      [["Per call", c.per_call], ["Per qualified lead", c.per_qualified], ["Per booked consult", c.per_booked], ["Per won project", c.per_won]]
-        .map(([k, v]) => `<tr class="costrow"><td>${k}</td><td class="num">${v ? inr(v) : "–"}</td></tr>`).join("") +
-      `<tr class="costrow total"><td>Return (won value ÷ cost)</td><td class="num">${c.return_multiple ? c.return_multiple + "×" : "–"}</td></tr>`;
+    lastStats = s;
+    STATIONS.forEach(([key]) => { const el = $("cnt-" + key); if (el) el.textContent = s.flywheel[key] ?? 0; });
+    const rq = s.rescued;
+    $("rescued").textContent = money(rq.pipeline_value);
+    $("rescuedNote").textContent = rq.after_hours_qualified
+      ? `${rq.after_hours_qualified} after-hours lead${rq.after_hours_qualified === 1 ? "" : "s"} × ${money(rq.avg_project_value)} average project`
+      : (s.volume.calls ? "No after-hours leads yet" : "Replay a call to start the loop");
+    const c = s.cost;
+    $("ledger").innerHTML =
+      [["Voice minutes", c.voice], ["AI reading calls", c.ai], ["Number rental and fixed", c.fixed_monthly]]
+        .map(([k, v]) => `<tr><td>${k}</td><td>${inr(v)}</td></tr>`).join("") +
+      `<tr class="sum"><td>Total</td><td>${inr(c.total)}</td></tr>` +
+      [["Per call answered", c.per_call], ["Per qualified lead", c.per_qualified], ["Per consult booked", c.per_booked], ["Per project won", c.per_won]]
+        .map(([k, v]) => `<tr class="sub"><td>${k}</td><td>${v ? inr(v) : "–"}</td></tr>`).join("") +
+      `<tr class="sum"><td>Won value ÷ cost</td><td>${c.return_multiple ? c.return_multiple + "×" : "–"}</td></tr>`;
     const r = s.not_fit_reasons;
-    bars($("reasons"), [["Outside area", r.outside_area], ["Advice only", r.advice_only], ["Timeline", r.timeline_too_short],
-      ["Budget", r.budget_misaligned], ["Out of scope / small", r.out_of_scope_type + r.below_minimum_size]]);
+    bars($("reasons"), [["Outside Pune and PCMC", r.outside_area], ["Wanted advice only", r.advice_only], ["Timeline too short", r.timeline_too_short],
+      ["Budget clearly too low", r.budget_misaligned], ["Out of scope or too small", r.out_of_scope_type + r.below_minimum_size]]);
     const g = s.signals;
-    bars($("signals"), [["Asked about price", g.asked_price], ["Repeat callers", g.repeat_caller], ["Edge localities", g.edge_locality],
-      ["Price said by AI", g.price_spoken_by_agent, true]], Math.max(1, s.volume.calls));
-    $("signalsCard").classList.toggle("alert", g.price_spoken_by_agent > 0);
-
-    const leads = (await api("/desk/leads")).leads;
-    $("leadRows").innerHTML = leads.length ? leads.map(l => `<tr data-id="${esc(l.lead_id)}">
-      <td>${new Date(l.received_at).toLocaleString("en-IN", {day:"numeric", month:"short", hour:"numeric", minute:"2-digit"})}${l.after_hours ? " 🌙" : ""}</td>
-      <td>${esc(l.caller_name || l.phone || "—")}</td><td>${esc(l.locality || "")}</td>
-      <td><span class="pill v-${l.verdict}">${VERDICT[l.verdict] || esc(l.verdict)}</span></td>
-      <td>${esc(l.designer || "")}</td>
-      <td><div class="flagchips">${(l.flags || []).map(x => `<span>#${esc(x)}</span>`).join("")}</div></td>
-      <td>${esc(l.outcome || (l.consult_booked ? "consult booked" : ""))}</td></tr>`).join("")
-      : `<tr><td colspan="7" class="muted">No calls yet. Replay one above.</td></tr>`;
-    $("leadRows").onclick = (e) => {
-      const tr = e.target.closest("tr[data-id]"); if (!tr) return;
-      const l = leads.find(x => x.lead_id === tr.dataset.id);
-      if (l) { renderResult(l); $("result").scrollIntoView({behavior: "smooth", block: "center"}); }
-    };
-  } catch (e) { $("tiles").innerHTML = `<div class="tile"><b>–</b><span>${esc(e.message)}</span></div>`; }
+    $("askedPrice").textContent = g.asked_price;
+    $("saidPrice").textContent = g.price_spoken_by_agent;
+    $("saidPrice").className = "num " + (g.price_spoken_by_agent ? "broken" : "holding");
+    $("cutLine").textContent = g.price_spoken_by_agent
+      ? "The guardrail caught a ₹ figure on a call. Nikhil has been alerted to check the transcript."
+      : g.asked_price
+        ? `${g.asked_price} caller${g.asked_price === 1 ? "" : "s"} asked; the desk deflected every time and offered the consultation instead. The Cut is holding.`
+        : "Nikhil asked for per-sq-ft quotes. His own pricing rules forbid it, so the desk deflects and books the consult instead, and a guardrail checks every transcript for a ₹ figure.";
+    renderLog((await api("/desk/leads")).leads);
+  } catch (e) { $("rescuedNote").textContent = e.message; }
+}
+function whereItIs(l) {
+  if (l.referral_asked_at) return "Referral asked · loop closed";
+  if (l.outcome === "won") return "Won" + (l.project_value_inr ? " · " + money(l.project_value_inr) : "");
+  if (l.outcome) return l.outcome.replace("_", " ") + (l.lost_reason ? " · " + l.lost_reason : "");
+  if (l.consult_done_at) return "Consult done";
+  if (l.accepted_at) return "Designer picked up";
+  if (l.verdict === "qualified") return l.consult_booked ? "Consult booked" : "Brief sent";
+  if (l.verdict === "nurture") return "Follow up " + (l.nurture_date || "later");
+  if (l.verdict === "escalation") return "With Nikhil";
+  if (l.verdict === "incomplete") return "Call-back alert sent";
+  return "Closed on the call";
+}
+function renderLog(leads) {
+  $("rows").innerHTML = leads.length ? leads.map(l => `<tr data-id="${esc(l.lead_id)}" tabindex="0">
+    <td class="num">${new Date(l.received_at).toLocaleString("en-IN", {day:"numeric", month:"short", hour:"numeric", minute:"2-digit"})}${l.after_hours ? " <span class='tag'>after hours</span>" : ""}</td>
+    <td>${esc(l.caller_name || l.phone || "—")}</td><td>${esc(l.locality || "")}</td>
+    <td><b class="v-${esc(l.verdict)}">${VERDICT[l.verdict] || esc(l.verdict)}</b></td>
+    <td>${esc(l.designer || "")}</td>
+    <td><div class="flags">${(l.flags || []).map(x => `<span>${esc(x.replace(/_/g, " "))}</span>`).join("")}</div></td>
+    <td>${esc(whereItIs(l))}</td></tr>`).join("")
+    : `<tr><td colspan="7" class="meta">No calls yet. Replay one above.</td></tr>`;
+  const open = (tr) => {
+    const l = leads.find(x => x.lead_id === tr.dataset.id); if (!l) return;
+    showDecision(l, false);
+    $("replay").scrollIntoView({behavior: REDUCED ? "auto" : "smooth"});
+  };
+  $("rows").onclick = (e) => { const tr = e.target.closest("tr[data-id]"); if (tr) open(tr); };
+  $("rows").onkeydown = (e) => { const tr = e.target.closest("tr[data-id]"); if (tr && e.key === "Enter") open(tr); };
 }
 
-$("testSel").onchange = showExpected;
-$("runBtn").onclick = () => run({test_id: $("testSel").value});
-$("ownBtn").onclick = () => run({transcript: $("ownText").value});
-loadStatus(); loadCalls(); refresh();
+/* ---------- replay theatre ---------- */
+let calls = [], selected = "T01", busy = false;
+async function loadCalls() {
+  try {
+    calls = (await api("/desk/test-calls")).calls;
+    $("callCount").textContent = calls.length + " calls";
+    $("calls").innerHTML = calls.map(c => `<li><button type="button" data-id="${c.id}" aria-pressed="false">
+      <span class="id">${c.id}</span><span class="t">${esc(c.title)}</span><span class="exp">Expected: ${VERDICT[c.expected]}</span></button></li>`).join("");
+    pick("T01");
+  } catch (e) { $("calls").innerHTML = `<li class="err" style="padding:12px">Couldn't load the calls: ${esc(e.message)}</li>`; }
+}
+function pick(id) {
+  selected = id;
+  document.querySelectorAll("#calls button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.id === id)));
+  document.querySelectorAll("[data-play]").forEach(b => { b.textContent = "Play " + id; });
+}
+$("calls").addEventListener("click", (e) => { const b = e.target.closest("button[data-id]"); if (b && !busy) pick(b.dataset.id); });
+
+function parseLines(text) {
+  const out = [];
+  String(text).split(/\n+/).forEach(raw => {
+    const t = raw.trim(); if (!t) return;
+    let m = t.match(/^(Caller|User|Customer)\s*:\s*(.*)$/i);
+    if (m) return out.push({who: "caller", text: m[2]});
+    m = t.match(/^(Front Desk|Assistant|Agent|AI|Studio)\s*:\s*(.*)$/i);
+    if (m) return out.push({who: "studio", text: m[2]});
+    if (/^T\d\d ·/.test(t) || /^(First|Second) call/i.test(t)) return;
+    if (/^Note:|MISSED CALL|Missed call|Call-back/i.test(t)) return out.push({who: "note", text: t.replace(/^Note:\s*/i, "")});
+    if (out.length) out[out.length - 1].text += " " + t;
+  });
+  return out;
+}
+async function streamLines(lines) {
+  const box = $("line"); box.innerHTML = "";
+  const gap = Math.max(60, Math.min(260, 3200 / Math.max(1, lines.length)));
+  for (const l of lines) {
+    const d = document.createElement("div");
+    d.className = "bub " + l.who;
+    d.innerHTML = l.who === "note" ? esc(l.text) : `<span class="who">${l.who === "caller" ? "Caller" : "Aangan desk"}</span>${esc(l.text)}`;
+    box.appendChild(d); box.scrollTop = box.scrollHeight;
+    await sleep(gap);
+  }
+}
+function setRing(live, text) { $("ring").classList.toggle("live", live); $("ringText").textContent = text; }
+function setBusy(on) {
+  busy = on;
+  document.querySelectorAll("[data-play], #ownBtn").forEach(b => b.disabled = on);
+}
+function offerAgain() {
+  $("line").insertAdjacentHTML("beforeend", `<div class="again"><button class="btn btn-line btn-sm" data-play type="button">Play ${selected}</button></div>`);
+  $("line").scrollTop = $("line").scrollHeight;
+}
+
+async function play(body, transcript) {
+  if (busy) return;
+  setBusy(true);
+  $("checks").innerHTML = CHECKS.map(([k, label]) => `<li data-k="${k}"><span class="ico"></span><span>${label}</span><span class="st"></span></li>`).join("");
+  $("outcome").innerHTML = `<p class="meta">Listening…</p>`; $("leadId").textContent = "";
+  runWheel(1, null); setRing(true, "Call in progress");
+  const request = api("/desk/simulate", body);
+  await streamLines(parseLines(transcript));
+  setRing(true, "Reading the call");
+  $("outcome").innerHTML = `<p class="meta">The AI is reading the transcript and checking the five criteria. This takes about 10 seconds.</p>`;
+  try {
+    const l = await request;
+    setRing(false, "Call ended");
+    await showDecision(l, true);
+    refresh();
+  } catch (e) {
+    setRing(false, "Couldn't finish");
+    $("outcome").innerHTML = `<p class="err">${esc(e.message)}. Check the AI key in Vercel, then play the call again.</p>`;
+  } finally {
+    setBusy(false);
+    offerAgain();
+  }
+}
+$("line").addEventListener("click", (e) => {
+  if (!e.target.closest("[data-play]") || busy) return;
+  const c = calls.find(x => x.id === selected);
+  play({test_id: selected}, c ? c.transcript : "");
+});
+$("ownBtn").onclick = () => play({transcript: $("ownText").value}, $("ownText").value);
+
+async function showDecision(l, animate) {
+  $("leadId").innerHTML = `<span class="data">${esc(l.lead_id)}</span>`;
+  if (!animate) $("checks").innerHTML = CHECKS.map(([k, label]) => `<li data-k="${k}"><span class="ico"></span><span>${label}</span><span class="st"></span></li>`).join("");
+  for (const [k] of CHECKS) {
+    const li = $("checks").querySelector(`[data-k="${k}"]`);
+    const v = ["pass", "fail", "unclear"].includes((l.criteria || {})[k]) ? l.criteria[k] : "unclear";
+    li.className = "lit " + v;
+    li.querySelector(".ico").outerHTML = ICON[v];
+    li.querySelector(".st").textContent = v;
+    if (animate) await sleep(200);
+  }
+  renderOutcome(l);
+  wheelFor(l);
+}
+
+function renderOutcome(l) {
+  const expected = l.expected ? (l.matches_expected
+    ? `<span class="tag ok">Matches the expected outcome</span>` : `<span class="tag no">Expected: ${VERDICT[l.expected]}</span>`) : "";
+  const why = (l.fail_reasons || []).map(x => x.replace(/_/g, " ")).join(", ");
+  const flags = (l.flags || []).map(x => x.replace(/_/g, " ")).join(", ");
+  let html = `<div class="verdict"><b class="v-${esc(l.verdict)}">${VERDICT[l.verdict] || esc(l.verdict)}</b>${expected}</div>
+    <p class="summary">${esc(l.summary)}</p>
+    <p class="meta">${why ? "Why: " + esc(why) + ". " : ""}${flags ? "Flags: " + esc(flags) + ". " : ""}AI cost ${inr(l.ai_cost_inr)}.</p>`;
+  if (l.verdict === "qualified" && l.handoff_text) {
+    html += `<div class="tg"><div class="tg-top"><span class="tg-av"><svg width="14" height="14" viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="10" fill="none" stroke="#C9A04E" stroke-width="3" stroke-dasharray="52 11"/></svg></span>
+      <span><b>Aangan Leads</b> to ${esc(l.designer || "front desk")} on Telegram</span></div>
+      <div class="tg-body">${l.handoff_text}</div>${tapsFor(l)}</div>`;
+    if (l.outcome === "won") html += referralBlock(l);
+  } else {
+    html += `<div class="routed">${{
+      not_fit: "Closed kindly on the call, with the reason logged so Nikhil can review declines each week.",
+      nurture: `Added to the front desk's follow-up list${l.nurture_date ? " for " + esc(l.nurture_date) : ""}. Not lost, just early.`,
+      escalation: "Sent straight to Nikhil: a senior person calls back within 15 minutes. The AI doesn't handle upset clients.",
+      incomplete: "The front desk gets a call-back alert with the number."}[l.verdict] || ""}</div>`;
+  }
+  $("outcome").innerHTML = html;
+  bindTaps(l);
+}
+function tapsFor(l) {
+  const next = l.outcome ? [] : l.consult_done_at ? [["won", "Won"], ["lst", "Lost"]] : l.accepted_at ? [["cdn", "Consult done"]] : [["acc", "Accept and call"], ["rea", "Reassign"]];
+  if (!next.length) return `<div class="closedline">Closed: <b>${esc(l.outcome.replace("_", " "))}</b>${l.project_value_inr ? " · " + money(l.project_value_inr) : ""}${l.lost_reason ? " · " + esc(l.lost_reason) : ""}</div>`;
+  return `<div class="taps">${next.map(([a, t]) => `<button type="button" data-act="${a}">${t}</button>`).join("")}</div>`;
+}
+function referralBlock(l) {
+  const done = !!l.referral_asked_at;
+  return `<div class="referral"><h4>${done ? "Referral sent. The loop is closed." : "Won. Now ask for the next call."}</h4>
+    <p>${esc(l.referral_text || "")}</p>
+    <div class="row">${done ? "" : `<button class="btn btn-k btn-sm" type="button" data-act="ref">Mark referral sent</button>`}
+    <button class="btn btn-line btn-sm" type="button" data-copy>Copy message</button></div></div>`;
+}
+function bindTaps(l) {
+  $("outcome").onclick = async (e) => {
+    const copy = e.target.closest("[data-copy]");
+    if (copy) {
+      try { await navigator.clipboard.writeText(l.referral_text || ""); copy.textContent = "Copied"; }
+      catch { copy.textContent = "Select the text to copy"; }
+      return;
+    }
+    const b = e.target.closest("button[data-act]"); if (!b) return;
+    const act = b.dataset.act === "lst" ? "lr:competitor" : b.dataset.act;
+    $("outcome").querySelectorAll("button").forEach(x => x.disabled = true);
+    try {
+      let r = await api(`/desk/leads/${l.lead_id}/action`, {action: act});
+      if (act === "acc") r = await api(`/desk/leads/${l.lead_id}/action`, {action: "cal"});
+      if (act === "won") r = await api(`/desk/leads/${l.lead_id}/action`, {action: "val:11.5"});
+      const merged = Object.assign({}, l, r.lead, {expected: l.expected, matches_expected: l.matches_expected});
+      renderOutcome(merged); wheelFor(merged); refresh();
+    } catch (err) {
+      $("outcome").insertAdjacentHTML("beforeend", `<p class="err">${esc(err.message)}</p>`);
+      $("outcome").querySelectorAll("button").forEach(x => x.disabled = false);
+    }
+  };
+}
+
+/* ---------- Monday brief ---------- */
+$("briefBtn").onclick = async () => {
+  const btn = $("briefBtn"); btn.disabled = true; btn.textContent = "Reading the week…";
+  $("briefOut").innerHTML = `<p class="placeholder">Reading ${lastStats ? lastStats.volume.calls + " logged calls" : "the logged calls"} and the numbers…</p>`;
+  try {
+    const b = await api("/desk/brief", {refresh: true});
+    $("briefOut").innerHTML = `<p class="hl">${esc(b.headline)}</p><ol class="ins">${b.insights.map((i, n) => `<li><span class="n">${n + 1}</span><div>
+      <h4>${esc(i.title)}</h4><p class="ev">${esc(i.evidence)}</p><p class="act"><b>Do this:</b> ${esc(i.action)}</p></div></li>`).join("")}</ol>`;
+    $("briefMeta").textContent = `Based on ${b.based_on_calls} calls · cost ${inr(b.cost_inr)}`;
+  } catch (e) {
+    $("briefOut").innerHTML = `<p class="placeholder bad">${esc(e.message)}</p>`;
+  } finally { btn.disabled = false; btn.textContent = "Write this week's brief"; }
+};
+
+drawWheel(); loadStatus(); loadCalls(); refresh();
 </script>
 </body>
 </html>
