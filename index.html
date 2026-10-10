@@ -177,7 +177,7 @@ Caller: Okay. My husband and I both decide, we can both come. Saturday morning w
 <footer>
   <span>Voice: Vaani · Brain: Claude Opus 5.5 · Handoff: Telegram · Data: Upstash Redis · Hosting: Vercel</span>
   <a href="/components-map.html">Components map</a>
-  <a href="/api/health">System health</a>
+  <a href="/desk/health">System health</a>
 </footer>
 </div>
 
@@ -205,7 +205,7 @@ async function api(path, body) {
 
 async function loadStatus() {
   try {
-    const h = await api("/api/health");
+    const h = await api("/desk/health");
     $("status").innerHTML = [
       `<span class="pill ${h.claude_key ? "ok" : "bad"}">${h.claude_key ? "AI: " + (h.ai === "gemini" ? "Gemini" : "Claude") + " connected" : "AI key missing"}</span>`,
       `<span class="pill ${h.storage === "redis" ? "ok" : "bad"}">Storage: ${h.storage === "redis" ? "Redis" : "temporary"}</span>`,
@@ -216,7 +216,7 @@ async function loadStatus() {
 
 async function loadCalls() {
   try {
-    calls = (await api("/api/test-calls")).calls;
+    calls = (await api("/desk/test-calls")).calls;
     $("testSel").innerHTML = calls.map(c => `<option value="${c.id}">${c.id} · ${esc(c.title)}</option>`).join("");
     showExpected();
   } catch (e) { $("testSel").innerHTML = "<option>Could not load test calls</option>"; }
@@ -265,9 +265,9 @@ function renderResult(l, stageOverride) {
     const b = e.target.closest("button[data-act]"); if (!b) return;
     taps.querySelectorAll("button").forEach(x => x.disabled = true);
     try {
-      let r = await api(`/api/leads/${l.lead_id}/action`, {action: b.dataset.act});
+      let r = await api(`/desk/leads/${l.lead_id}/action`, {action: b.dataset.act});
       if (b.dataset.act === "won") {
-        r = await api(`/api/leads/${l.lead_id}/action`, {action: "val:11.5"});
+        r = await api(`/desk/leads/${l.lead_id}/action`, {action: "val:11.5"});
         r.note = "Won · ₹11.5L recorded";
       }
       renderResult(Object.assign({}, l, r.lead, {expected: l.expected, matches_expected: l.matches_expected}), r.next_stage === "lost" ? "lost" : null);
@@ -281,7 +281,7 @@ async function run(body) {
   $("runMsg").textContent = "Claude is reading the call… (10–30 s)";
   $("result").innerHTML = `<div class="empty">Reading the transcript, checking the five criteria, picking a designer…</div>`;
   try {
-    const l = await api("/api/simulate", body);
+    const l = await api("/desk/simulate", body);
     renderResult(l);
     $("runMsg").textContent = "";
     refresh();
@@ -298,7 +298,7 @@ function bars(el, rows, max) {
 
 async function refresh() {
   try {
-    const s = await api("/api/stats");
+    const s = await api("/desk/stats");
     const f = s.funnel, c = s.cost;
     $("tiles").innerHTML = [
       [s.volume.calls, "calls answered"], [s.volume.after_hours, "after hours (missed before)"],
@@ -322,7 +322,7 @@ async function refresh() {
       ["Price said by AI", g.price_spoken_by_agent, true]], Math.max(1, s.volume.calls));
     $("signalsCard").classList.toggle("alert", g.price_spoken_by_agent > 0);
 
-    const leads = (await api("/api/leads")).leads;
+    const leads = (await api("/desk/leads")).leads;
     $("leadRows").innerHTML = leads.length ? leads.map(l => `<tr data-id="${esc(l.lead_id)}">
       <td>${new Date(l.received_at).toLocaleString("en-IN", {day:"numeric", month:"short", hour:"numeric", minute:"2-digit"})}${l.after_hours ? " 🌙" : ""}</td>
       <td>${esc(l.caller_name || l.phone || "—")}</td><td>${esc(l.locality || "")}</td>
