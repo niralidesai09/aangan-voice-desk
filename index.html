@@ -207,7 +207,7 @@ async function loadStatus() {
   try {
     const h = await api("/api/health");
     $("status").innerHTML = [
-      `<span class="pill ${h.claude_key ? "ok" : "bad"}">Claude ${h.claude_key ? "connected" : "key missing"}</span>`,
+      `<span class="pill ${h.claude_key ? "ok" : "bad"}">${h.claude_key ? "AI: " + (h.ai === "gemini" ? "Gemini" : "Claude") + " connected" : "AI key missing"}</span>`,
       `<span class="pill ${h.storage === "redis" ? "ok" : "bad"}">Storage: ${h.storage === "redis" ? "Redis" : "temporary"}</span>`,
       `<span class="pill ${h.telegram ? "ok" : ""}">Telegram ${h.telegram ? "on" : "off"}</span>`
     ].join("");
