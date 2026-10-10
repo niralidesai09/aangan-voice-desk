@@ -900,14 +900,38 @@ def app(environ, start_response):
         print("error", path, repr(e))
         status, payload = 500, {"error": str(e)[:300],
                                 "result": "Sorry, I couldn't do that just now. A designer will call to confirm."}
-    data = json.dumps(payload, default=str).encode()
+    if isinstance(payload, tuple):  # (bytes, content_type) for pages and images
+        data, ctype = payload
+    else:
+        data, ctype = json.dumps(payload, default=str).encode(), "application/json"
     start_response("%d %s" % (status, {200: "OK", 400: "Bad Request", 401: "Unauthorized", 404: "Not Found",
                                        429: "Too Many Requests", 500: "Internal Server Error"}.get(status, "OK")),
-                   [("Content-Type", "application/json"), ("Cache-Control", "no-store"), ("Content-Length", str(len(data)))])
+                   [("Content-Type", ctype), ("Cache-Control", "no-store"), ("Content-Length", str(len(data)))])
     return [data]
 
 
+PAGES = {"/": ("index.html", "text/html; charset=utf-8"),
+         "/index.html": ("index.html", "text/html; charset=utf-8"),
+         "/components-map.html": ("components-map.html", "text/html; charset=utf-8"),
+         "/components-map.png": ("components-map.png", "image/png")}
+
+
+def static_page(path):
+    """Serve the dashboard from the function too, wherever the files sit in the repo (root, public/ or docs/)."""
+    name, ctype = PAGES[path]
+    here = os.path.dirname(os.path.abspath(__file__))
+    for base in (os.path.join(here, ".."), os.getcwd()):
+        for sub in ("", "public", "docs"):
+            p = os.path.join(base, sub, name)
+            if os.path.exists(p):
+                with open(p, "rb") as f:
+                    return 200, (f.read(), ctype)
+    return 404, {"error": "page file not found", "file": name}
+
+
 def dispatch(method, path, query, body, environ):
+    if path in PAGES and method == "GET":
+        return static_page(path)
     if path == "/api/health":
         return 200, {"ok": True, "ai": ai_provider() or "none",
                      "model": MODEL if ai_provider() == "claude" else (env("GEMINI_MODEL") or GEMINI_MODELS[0]),
