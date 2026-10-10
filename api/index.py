@@ -95,6 +95,11 @@ class Store:
             return self._cmd("LPUSH", k, v)
         _MEM.setdefault(k, []).insert(0, v)
 
+    def ltrim(self, k, a, b):
+        if self.persistent:
+            return self._cmd("LTRIM", k, a, b)
+        _MEM[k] = _MEM.get(k, [])[a:b + 1]
+
     def lrange(self, k, a, b):
         if self.persistent:
             return self._cmd("LRANGE", k, a, b) or []
@@ -916,6 +921,7 @@ def monday_brief(refresh=False):
 def public_lead(l):
     out = {k: v for k, v in l.items() if k not in ("transcript",)}
     out["phone"] = mask_phone(l.get("phone"))
+    out["channel"] = "replay" if l.get("simulated") else "phone"
     if out.get("handoff_text"):
         out["handoff_text"] = out["handoff_text"].replace(esc(l.get("phone")), out["phone"])
     return out
@@ -973,9 +979,12 @@ def unwrap_args(b):
 
 
 def authorised(environ, query):
+    """Open when WEBHOOK_SECRET isn't set (no-password setup); a daily cap on calls limits misuse instead."""
     secret = env("WEBHOOK_SECRET")
+    if not secret:
+        return True
     given = query.get("key") or environ.get("HTTP_X_WEBHOOK_SECRET", "")
-    return bool(secret) and given == secret
+    return given == secret
 
 
 def app(environ, start_response):
@@ -1051,6 +1060,9 @@ def dispatch(method, path, query, body, environ):
         if not authorised(environ, query):
             return 401, {"error": "unauthorised"}
         fn = path.rsplit("/", 1)[1]
+        store.lpush("raw", json.dumps({"at": now_ist().isoformat(), "fn": fn, "query": {k: v for k, v in query.items() if k != "key"},
+                                       "body": body}, default=str)[:12000])
+        store.ltrim("raw", 0, 19)
         a = unwrap_args(body)
         if fn == "check_caller":
             return 200, check_caller(a.get("phone") or pick(body, "from", "caller", "call.from") or "")
@@ -1061,10 +1073,21 @@ def dispatch(method, path, query, body, environ):
         if fn == "escalate":
             return 200, escalate(a)
         if fn == "call_ended":
+            if not env("WEBHOOK_SECRET") and store.incr("calls:" + now_ist().strftime("%Y%m%d"), 172800) > int(env("CALLS_PER_DAY", "150")):
+                return 429, {"error": "Daily call limit reached"}
             lead = process_call(body)
             return 200, {"ok": True, "lead_id": lead["lead_id"], "verdict": lead.get("verdict")}
         return 404, {"error": "unknown function " + fn}
 
+    if path == "/api/raw" and method == "GET":
+        if not authorised(environ, query):
+            return 401, {"error": "unauthorised"}
+        def hide(txt):  # mask phone numbers (10+ digits), leave dates and times alone
+            def m(x):
+                d = re.sub(r"\D", "", x.group())
+                return "••••" + d[-4:] if len(d) >= 10 and not re.match(r"\d{4}-\d{2}-\d{2}", x.group()) else x.group()
+            return re.sub(r"\+?\d[\d\s-]{8,}\d", m, txt)
+        return 200, {"recent_vaani_requests": [json.loads(hide(x)) for x in store.lrange("raw", 0, 19)]}
     if path == "/api/stats" and method == "GET":
         sla_sweep()
         return 200, stats()
