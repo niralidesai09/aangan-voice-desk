@@ -883,6 +883,16 @@ def app(environ, start_response):
     method = environ.get("REQUEST_METHOD", "GET")
     query = {k: v[0] for k, v in urllib.parse.parse_qs(environ.get("QUERY_STRING", "")).items()}
     path = "/api/" + query["route"] if query.get("route") else environ.get("PATH_INFO", "/")
+    if path.rstrip("/") == "/api/index":
+        # Vercel rewrites /api/* to the function file; recover the address the caller used if a header carries it.
+        for h in ("HTTP_X_VERCEL_ORIGINAL_PATH", "HTTP_X_MATCHED_PATH", "HTTP_X_FORWARDED_URI", "HTTP_X_ORIGINAL_URL",
+                  "REQUEST_URI", "RAW_URI"):
+            v = environ.get(h, "").split("?")[0]
+            if v and v.rstrip("/") != "/api/index":
+                path = v
+                break
+    if path.startswith("/desk/"):  # public alias used by the dashboard and Vaani: /desk/x == /api/x
+        path = "/api/" + path[len("/desk/"):]
     path = path.rstrip("/") or "/"
     body = {}
     if method == "POST":
